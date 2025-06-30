@@ -296,6 +296,7 @@ function Invoice() {
     }
     try {
       console.log("Saving invoice with data:", JSON.stringify(invoiceData, null, 2));
+      console.log("after",invoiceData.gstAmount)
       await saveInvoiceMutation.mutateAsync(invoiceData);
       navigate("/billing");
     } catch (error) {
@@ -305,10 +306,9 @@ function Invoice() {
   };
 
   // Calculate invoice summary for preview and template
-  const subtotal = invoiceItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    + transportationValue
-    + packagingValue;
+  const subtotal = invoiceItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const gstAmount = subtotal * (gstRate / 100);
+  console.log("Before gstAmount",gstAmount)
   const total = subtotal + gstAmount;
 
   const invoiceData = {
@@ -333,6 +333,7 @@ function Invoice() {
     packaging: packagingValue,
     template: selectedTemplate,
   };
+  console.log("invoiceData",invoiceData)
 
   return (
     <div className="container p-4 pt-6 md:p-8">

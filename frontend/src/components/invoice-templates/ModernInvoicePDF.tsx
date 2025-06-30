@@ -76,7 +76,7 @@ interface InvoiceData {
 
 const styles = StyleSheet.create({
     page: {
-        padding: 15,
+        padding: 20,
         fontSize: 9,
         fontFamily: 'Poppins',
         backgroundColor: '#fff',
@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: 5,
         borderWidth: 1,
         borderColor: '#000',
         padding: 8,
@@ -266,11 +265,47 @@ const styles = StyleSheet.create({
         borderRightWidth: 0,
         borderStyle: 'solid',
     },
+    bankAndTotalRow: {
+        flexDirection: 'row',
+        borderTopWidth: 0,
+        marginTop: -6,
+    },
     bankDetails: {
-        marginTop: 5,
+        flex: 1,
         padding: 3,
         borderWidth: 1,
         borderColor: '#000',
+        borderTopWidth: 0,
+        marginRight: -1,
+    },
+    totalSummary: {
+        width: 300,
+        padding: 3,
+        borderWidth: 1,
+        borderColor: '#000',
+        borderTopWidth: 0,
+    },
+    summaryRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingVertical: 2,
+        paddingHorizontal: 6,
+    },
+    summaryLabel: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        fontFamily: 'Poppins',
+    },
+    summaryValue: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        fontFamily: 'Poppins',
+        textAlign: 'right',
+    },
+    summaryTotal: {
+        fontSize: 9,
+        fontWeight: 'bold',
+        fontFamily: 'Poppins',
     },
     bankTitle: {
         fontSize: 10,
@@ -293,20 +328,22 @@ const styles = StyleSheet.create({
     },
     termsAndSignatureRow: {
         flexDirection: 'row',
-        marginTop: 5,
-        gap: 5,
+        borderTopWidth: 0,
     },
     termsSection: {
         flex: 1,
         padding: 3,
         borderWidth: 1,
         borderColor: '#000',
+        borderTopWidth: 0,
+        marginRight: -1,
     },
     signatureSection: {
         width: 200,
         padding: 3,
         borderWidth: 1,
         borderColor: '#000',
+        borderTopWidth: 0,
         flexDirection: 'column',
         alignItems: 'center',
     },
@@ -353,9 +390,9 @@ const styles = StyleSheet.create({
     },
     footer: {
         position: 'absolute',
-        bottom: 15,
-        left: 15,
-        right: 15,
+        bottom: 20,
+        left: 20,
+        right: 20,
         fontSize: 7,
         textAlign: 'center',
     },
@@ -363,9 +400,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#000',
         padding: 5,
-        marginBottom: 10,
         flexDirection: 'row',
         alignItems: 'center',
+        borderTopWidth: 0,
     },
     gstinLabel: {
         fontSize: 10,
@@ -390,9 +427,10 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                 quantity: acc.quantity + item.quantity,
                 taxableValue: acc.taxableValue + taxableValue,
                 igstAmount: acc.igstAmount + igstAmount,
-                totalAmount: acc.totalAmount + totalAmount
+                totalAmount: acc.totalAmount + totalAmount,
+                totalTax: acc.totalTax + igstAmount
             };
-        }, { quantity: 0, taxableValue: 0, igstAmount: 0, totalAmount: 0 });
+        }, { quantity: 0, taxableValue: 0, igstAmount: 0, totalAmount: 0, totalTax: 0 });
     };
 
     return (
@@ -440,6 +478,11 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                             <Text style={styles.addressTitle}>Bill To</Text>
 
                             <View style={styles.addressRow}>
+                                <Text style={styles.addressLabel}>Name:</Text>
+                                <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerBillTo.name}</Text>
+                            </View>
+
+                            <View style={styles.addressRow}>
                                 <Text style={styles.addressLabel}>Address:</Text>
                                 <Text style={styles.addressValue}>{invoiceData.customerBillTo.address}</Text>
                             </View>
@@ -457,6 +500,11 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
 
                         <View style={styles.shipTo}>
                             <Text style={styles.addressTitle}>Ship To</Text>
+
+                            <View style={styles.addressRow}>
+                                <Text style={styles.addressLabel}>Name:</Text>
+                                <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerShipTo.name}</Text>
+                            </View>
 
                             <View style={styles.addressRow}>
                                 <Text style={styles.addressLabel}>Address:</Text>
@@ -516,7 +564,8 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                             <Text style={[styles.tableCellRight, { flex: 1 }]}>Rate</Text>
                             <Text style={[styles.tableCellRight, { flex: 1 }]}>Taxable Value</Text>
                             <Text style={[styles.tableCellCenter, { flex: 0.5 }]}>IGST %</Text>
-                            <Text style={[styles.tableCellLast, { flex: 1 }]}>Amount</Text>
+                            <Text style={[styles.tableCellRight, { flex: 1 }]}>Tax Amount</Text>
+                            <Text style={[styles.tableCellLast, { flex: 1 }]}>Total Amount</Text>
                         </View>
                         {invoiceData.items.map((item, index) => (
                             <View style={styles.tableRow} key={item.id}>
@@ -526,8 +575,9 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                                 <Text style={[styles.tableCellCenter, { flex: 0.5 }]}>{item.quantity}</Text>
                                 <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(item.price)}</Text>
                                 <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(item.price * item.quantity)}</Text>
-                                <Text style={[styles.tableCellCenter, { flex: 0.5 }]}>{item.igstPercent || 0}</Text>
-                                <Text style={[styles.tableCellLast, { flex: 1 }]}>{formatCurrency((item.price * item.quantity) * (1 + (item.igstPercent || 0) / 100))}</Text>
+                                <Text style={[styles.tableCellCenter, { flex: 0.5 }]}>{invoiceData.gstRate || 0}%</Text>
+                                <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency((item.price * item.quantity) * ((invoiceData.gstRate || 0) / 100))}</Text>
+                                <Text style={[styles.tableCellLast, { flex: 1 }]}>{formatCurrency((item.price * item.quantity) * (1 + (invoiceData.gstRate || 0) / 100))}</Text>
                             </View>
                         ))}
                         <View style={styles.tableRowTotal}>
@@ -538,18 +588,60 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                             <Text style={[styles.tableCellRight, { flex: 1 }]}></Text>
                             <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(calculateTotals(invoiceData.items).taxableValue)}</Text>
                             <Text style={[styles.tableCellCenter, { flex: 0.5 }]}></Text>
-                            <Text style={[styles.tableCellLast, { flex: 1 }]}>{formatCurrency(calculateTotals(invoiceData.items).totalAmount)}</Text>
+                            <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(invoiceData.gstAmount)}</Text>
+                            <Text style={[styles.tableCellLast, { flex: 1 }]}>{formatCurrency(invoiceData.total)}</Text>
                         </View>
                     </View>
                 </View>
 
-                {/* Bank Details */}
-                <View style={styles.bankDetails}>
-                    <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Bank Details</Text>
-                    <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Name: State Bank of India</Text>
-                    <Text style={[styles.bankText, { paddingLeft: 6 }]}>Branch Name: RAF CAMP</Text>
-                    <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Account Number: 20000000452</Text>
-                    <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Branch IFSC: SBIN000488</Text>
+                {/* Bank Details and Total Summary */}
+                <View style={styles.bankAndTotalRow}>
+                    <View style={styles.bankDetails}>
+                        <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Bank Details</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Name: State Bank of India</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Branch Name: RAF CAMP</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Account Number: 20000000452</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Branch IFSC: SBIN000488</Text>
+                    </View>
+
+                    <View style={styles.totalSummary}>
+                        <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Amount Summary</Text>
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>Taxable Amount:</Text>
+                            <Text style={styles.summaryValue}>{formatCurrency(calculateTotals(invoiceData.items).taxableValue)}</Text>
+                        </View>
+                        {invoiceData.packaging !== undefined && (
+                            <View style={styles.summaryRow}>
+                                <Text style={styles.summaryLabel}>Packaging:</Text>
+                                <Text style={styles.summaryValue}>{formatCurrency(invoiceData.packaging)}</Text>
+                            </View>
+                        )}
+                        {invoiceData.transportationAndOthers !== undefined && (
+                            <View style={styles.summaryRow}>
+                                <Text style={styles.summaryLabel}>Transportation & Others:</Text>
+                                <Text style={styles.summaryValue}>{formatCurrency(invoiceData.transportationAndOthers)}</Text>
+                            </View>
+                        )}
+                        {/* <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>Add: IGST:</Text>
+                            <Text style={styles.summaryValue}>{formatCurrency(invoiceData.gstAmount)}</Text>
+                        </View> */}
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>Total Tax:</Text>
+                            <Text style={styles.summaryValue}>{formatCurrency(invoiceData.gstAmount)}</Text>
+                        </View>
+                        <View style={[styles.summaryRow, { marginTop: 2, borderTopWidth: 1, borderColor: '#000', paddingTop: 4 }]}>
+                            <Text style={styles.summaryLabel}>Total Amount After Tax:</Text>
+                            <Text style={styles.summaryValue}>{formatCurrency(invoiceData.total)}</Text>
+                        </View>
+                        <View style={[styles.summaryRow, { marginTop: 4 }]}>
+                            <Text style={[styles.summaryLabel, { fontWeight: 'bold' }]}>(E & O.E)</Text>
+                        </View>
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>GST Payable on Reverse Charge:</Text>
+                            <Text style={styles.summaryValue}>N.A.</Text>
+                        </View>
+                    </View>
                 </View>
 
                 {/* Terms and Conditions */}
