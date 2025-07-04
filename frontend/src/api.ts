@@ -148,15 +148,15 @@ export const authAPI = {
   logout: async () => {
     isLoggingOut = true;
     try {
-      // Try to call logout API, but don't wait for it or worry about errors
       const response = await axiosInstance.post('/auth/logout');
+      // On successful logout, the interceptor will handle the auth failure.
       return response;
     } catch (error) {
-      // Ignore errors during logout API call
+      // If the API call fails, force a logout.
       console.log('Logout API call failed, but proceeding with local logout');
+      handleAuthFailure('Logout API call failed');
+      throw error;
     } finally {
-      // Always force logout regardless of API response
-      handleAuthFailure('Logout API call');
       isLoggingOut = false;
     }
   },

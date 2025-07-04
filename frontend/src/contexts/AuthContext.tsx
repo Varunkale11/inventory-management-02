@@ -125,17 +125,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const logout = async (): Promise<void> => {
         try {
-            // Clear auth state immediately - don't wait for API call
-            clearAuthState();
-
-            // Call the logout API (which handles the cleanup automatically)
             await authAPI.logout();
-
             toast.success('Logged out successfully');
         } catch (error: any) {
-            // Even if the API call fails, state is already cleared
+            // Error is already handled by the API layer, just need to ensure state is cleared
             console.log('Logout process completed (API call may have failed)');
-
+        } finally {
+            clearAuthState();
             // Make sure we're redirected to login if not already there
             if (!window.location.pathname.includes('/login')) {
                 window.location.href = '/login';
