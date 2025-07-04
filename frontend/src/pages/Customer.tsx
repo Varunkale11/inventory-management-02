@@ -62,7 +62,7 @@ const customerValidationSchema: ValidationSchema = {
 };
 
 export default function CustomerPage() {
-    const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
+    const {  isAuthenticated, isLoading: isAuthLoading } = useAuth();
     const navigate = useNavigate();
 
     // React Query hooks

@@ -233,7 +233,7 @@ const PremiumMinimalInvoice: React.FC<{ invoiceData: InvoiceData }> = ({ invoice
   );
 
   const renderCustomerDetails = () => (
-    <div className="border border-black mb-6 text-black text-black bg-white">
+    <div className="border border-black mb-6 text-black bg-white">
       <div className="grid grid-cols-4 divide-x divide-black">
         {/* Invoice Details */}
         <div className="col-span-2 p-3">
@@ -446,6 +446,7 @@ const PremiumMinimalInvoice: React.FC<{ invoiceData: InvoiceData }> = ({ invoice
             <QRCode
               value={`${import.meta.env.VITE_FRONTEND_URL}/invoice/${invoiceData.id}`}
               size={56}
+              title={`${import.meta.env.VITE_FRONTEND_URL}/invoice/${invoiceData.id}`}
             />
           </div>
         </div>

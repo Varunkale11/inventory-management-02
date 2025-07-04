@@ -170,7 +170,7 @@ const InvoiceClassic: React.FC<{ invoiceData: InvoiceData }> = ({ invoiceData })
         </div>
         {/* QR Code */}
         <div className='w-40 p-4 bg-gray-50 flex flex-col items-center justify-center'>
-          <QRCode size={120} value={`${import.meta.env.VITE_FRONTEND_URL}/invoice/${invoiceData.id}`} />
+          <QRCode size={120} value={`${import.meta.env.VITE_FRONTEND_URL}/invoice/${invoiceData.id}`} title={`${import.meta.env.VITE_FRONTEND_URL}/invoice/${invoiceData.id}`} />
         </div>
       </div>
     </div>

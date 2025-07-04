@@ -78,12 +78,12 @@ class EmailService {
 
     const message = `
       Welcome to Billing App!
-      
+
       Please click the link below to verify your email address:
       ${verificationURL}
-      
+
       This link will expire in 24 hours.
-      
+
       If you didn't create an account with us, please ignore this email.
     `;
 
@@ -133,16 +133,16 @@ class EmailService {
   }
 
   async sendPasswordResetEmail(email, resetToken) {
-    const resetURL = `${process.env.VITE_FRONTEND_URL || "http://localhost:5173"}/reset-password/${resetToken}`;
+    const resetURL = `${process.env.VITE_FRONTEND_URL || "http://localhost:5173"}/auth/reset-password/${resetToken}`;
 
     const message = `
-      Forgot your password? 
-      
+      Forgot your password?
+
       Click the link below to reset your password:
       ${resetURL}
-      
+
       This link will expire in 10 minutes.
-      
+
       If you didn't request this, please ignore this email.
     `;
 
@@ -192,11 +192,11 @@ class EmailService {
   async sendPasswordChangeNotification(email) {
     const message = `
       Password Changed Successfully
-      
+
       This email confirms that your password has been changed successfully.
-      
+
       If you didn't make this change, please contact our support team immediately.
-      
+
       For security, you have been logged out of all devices and will need to log in again.
     `;
 
