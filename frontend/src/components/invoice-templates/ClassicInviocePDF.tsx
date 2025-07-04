@@ -139,34 +139,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         color: '#000',
     },
-    gstinSection: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    gstinLabel: {
-        fontSize: 8,
-        fontWeight: 'bold',
-        marginRight: 4,
-    },
-    gstinValue: {
-        fontSize: 8,
-    },
-    detailRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-        minHeight: 14,
-    },
-    detailLabel: {
-        fontSize: 8,
-        fontWeight: 'bold',
-        width: '40%',
-    },
-    detailValue: {
-        fontSize: 8,
-        width: '60%',
-    },
+
+
+
+
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
