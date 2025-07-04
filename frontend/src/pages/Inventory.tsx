@@ -327,14 +327,44 @@ export default function InventoryPage() {
                                                 <TableCell className="">{categories.indexOf(c) + 1}</TableCell>
                                                 <TableCell>{c.name}</TableCell>
                                                 <TableCell>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => handleDeleteCategory(c._id)}
-                                                        disabled={deleteCategoryMutation.isPending}
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Button>
+                                                    <Dialog>
+                                                        <DialogTrigger asChild>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                disabled={deleteCategoryMutation.isPending}
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </Button>
+                                                        </DialogTrigger>
+                                                        <DialogContent>
+                                                            <DialogHeader>
+                                                                <DialogTitle>Delete Category</DialogTitle>
+                                                                <DialogDescription>
+                                                                    If you delete this category, it will be <span className="underline underline-offset-2 text-black">removed from all invoice bill items </span> as well.
+                                                                </DialogDescription>
+                                                            </DialogHeader>
+                                                            <DialogFooter>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    onClick={() => {
+                                                                        // Close dialog by clicking cancel
+                                                                        const dialog = document.activeElement as HTMLElement;
+                                                                        dialog?.blur();
+                                                                    }}
+                                                                >
+                                                                    Cancel
+                                                                </Button>
+                                                                <Button
+                                                                    variant="destructive"
+                                                                    onClick={() => handleDeleteCategory(c._id)}
+                                                                    disabled={deleteCategoryMutation.isPending}
+                                                                >
+                                                                    {deleteCategoryMutation.isPending ? "Deleting..." : "Delete"}
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </DialogContent>
+                                                    </Dialog>
                                                 </TableCell>
                                             </TableRow>
                                         ))}

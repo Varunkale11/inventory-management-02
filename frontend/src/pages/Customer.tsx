@@ -48,7 +48,7 @@ const customerValidationSchema: ValidationSchema = {
     },
     address: {
         required: true,
-        minLength: 10,
+        minLength: 6,
         maxLength: 200,
     },
     panNumber: {

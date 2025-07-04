@@ -22,6 +22,10 @@ const itemSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  sqFeet: {
+    type: Number,
+    required: false,
+  },
 });
 
 const itemModel = mongoose.model("itemModel", itemSchema);

@@ -30,6 +30,7 @@ interface InvoiceData {
         cityState: string;
         phone: string;
         email: string;
+        gstin: string;
     };
     items: {
         id: string;
@@ -37,7 +38,11 @@ interface InvoiceData {
         name: string;
         price: number;
         quantity: number;
+        sqFeet?: number;
         hsnCode: string;
+        taxableValue?: number;
+        igstPercent?: number;
+        amount?: number;
     }[];
     subtotal: number;
     gstAmount: number;
@@ -50,6 +55,8 @@ interface InvoiceData {
     challanDate?: string;
     poNo?: string;
     eWayNo?: string;
+    showPcsInQty?: boolean;
+    showSqFeet?: boolean;
 }
 
 // Helper function to convert number to words (simplified version)
@@ -128,79 +135,60 @@ const ProfessionalInvoiceTemplate: React.FC<{ invoiceData: InvoiceData }> = ({ i
 
     const renderHeader = () => (
         <div className="border-2 border-black mb-4 flex text-black ">
-
-            <div className='w-40 p-4 bg-gray-50 flex flex-col items-center justify-center'>
-                {/* <img src="/logo.png" alt="logo" className="w-full h-full" /> */}
-                <QRCode size={120} value={`${import.meta.env.VITE_FRONTEND_URL}/invoice/${invoiceData.id}`} />
-            </div>
-            {/* Company Info */}
-            <div className="flex-1 p-4 border-r border-black">
-                <h1 className="text-2xl font-bold text-blue-800 text-center mb-2">DYNAMIC ENTRPRISE</h1>
-                {/* <div className="bg-blue-800 text-white text-xs text-center py-1 mb-2">
-                    Manufacturing & Supply of Precision Press Tool & Room Component
-                </div> */}
-                <div className="flex justify-between">
-
-                <div className="text-xs text-center space-y-1 mb-2">
-                    <p className='text-xs w-40 text-left'>
-                        {companyDetails.address}
-                    </p>
+            {/* Left Side - Logo and Company Info */}
+            <div className="flex-1 flex">
+                {/* Logo Area */}
+                <div className="w-40 p-4 bg-blue-50 flex flex-col items-center justify-center border-r border-black">
+                    <img src="/logo.png" alt="logo" className="w-full h-full" />
                 </div>
-                <div className="text-xs text-center space-y-1 mb-2">
-                    <p>Tel : 079-25820309</p>
-                    <p>Web : www.gfttools.com</p>
-                    <p>Email : info@gfttools.com</p>
-                </div>
+                {/* Company Info */}
+                <div className="flex-1 p-4 ">
+                    <h1 className="text-2xl font-bold text-blue-800 text-left mb-2">DYNAMIC ENTRPRISE</h1>
+                    <div className="flex justify-between">
+                        <div className="text-xs text-left space-y-1 mb-2">
+                            <p>Tel : 079-25820309</p>
+                            <p>Web : www.gfttools.com</p>
+                            <p>Email : info@gfttools.com</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Logo Area */}
-            <div className="w-40 p-4 bg-blue-50 flex flex-col items-center justify-center">
-                {/* <div className="text-lg font-bold text-blue-800">LOGOTEXT</div> */}
-                {/* <div className="text-xs text-gray-500">ANYWHERE</div> */}
-                <img src="/logo.png" alt="logo" className="w-full h-full" />
+            {/* Right Side - QR Code and Address */}
+            <div className="flex items-center justify-between">
+                {/* Address */}
+                <div className="p-0  ">
+                    <div className="text-xs space-y-1">
+                        <p className='text-xs w-40 text-left'>
+                            {companyDetails.address}
+                        </p>
+                    </div>
+                </div>
+                {/* QR Code */}
+                <div className='w-40 p-4 bg-gray-50 flex flex-col items-center justify-center'>
+                    <QRCode size={120} value={`${import.meta.env.VITE_FRONTEND_URL}/invoice/${invoiceData.id}`} />
+                </div>
             </div>
         </div>
     );
 
     const renderGSTINSection = () => (
         <div className="border border-black flex text-black">
-            <div className="flex-1 p-3 border-r border-black">
+            <div className="flex-1 p-3">
                 <span className="text-md font-bold">GSTIN : 24HDE7487RE5RT4</span>
             </div>
-            <div className="flex-1 flex items-center justify-between p-3 text-center">
+            {/* <div className="flex-1 flex items-center justify-between p-3 border-r border-black">
                 <h2 className="text-2xl font-bold">TAX INVOICE</h2>
-                <p className="text-xs text-right ">ORIGINAL FOR RECIPIENT</p>
-            </div>
+                <p className="text-xs text-right">ORIGINAL FOR RECIPIENT</p>
+            </div> */}
+
         </div>
     );
 
     const renderCustomerDetails = () => (
         <div className="border border-black mb-4 flex text-black">
-            {/* Bill To Detail */}
-            <div className="flex-1 py-2 px-0 border-r border-black">
-                <div className="text-xs font-bold text-center border-b border-black pb-1 mb-2">Bill To</div>
-                <div className="text-xs space-y-1 px-4">
-                    <p><span className="font-bold">M/S:</span> {customerBillTo.name}</p>
-                    <p><span className="font-bold">Address:</span> {customerBillTo.address}</p>
-                    <p><span className="font-bold">PHONE:</span> {customerBillTo.phoneNumber || '-'}</p>
-                    <p><span className="font-bold">GSTIN:</span> {customerBillTo.gstNumber || '-'}</p>
-                </div>
-            </div>
-
-            {/* Ship To Detail */}
-            <div className="flex-1 py-2 px-0 border-r border-black">
-                <div className="text-xs font-bold text-center border-b border-black pb-1 mb-2">Ship To</div>
-                <div className="text-xs space-y-1 px-4">
-                    <p><span className="font-bold">M/S:</span> {invoiceData.customerShipTo.name}</p>
-                    <p><span className="font-bold">Address:</span> {invoiceData.customerShipTo.address}</p>
-                    <p><span className="font-bold">PHONE:</span> {invoiceData.customerShipTo.phoneNumber || '-'}</p>
-                    <p><span className="font-bold">GSTIN:</span> {invoiceData.customerShipTo.gstNumber || '-'}</p>
-                </div>
-            </div>
-
-            {/* Invoice Details */}
-            <div className="flex-1 p-4">
+            {/* Invoice Details (now first/left) */}
+            <div className="flex-1 p-4 border-r border-black">
                 <div className="text-xs space-y-2">
                     <div className="grid grid-cols-2 gap-4 text-xs">
                         <div className="flex gap-2">
@@ -236,10 +224,32 @@ const ProfessionalInvoiceTemplate: React.FC<{ invoiceData: InvoiceData }> = ({ i
                             <span className='font-bold'>-</span>
                         </div>
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 mt-2">
                         <span>E-Way No.</span>
                         <span className="font-bold">{invoiceData.eWayNo || '-'}</span>
                     </div>
+                </div>
+            </div>
+
+            {/* Bill To Detail (middle) */}
+            <div className="flex-1 py-2 px-0 border-r border-black">
+                <div className="text-xs font-bold text-center border-b border-black pb-1 mb-2">Bill To</div>
+                <div className="text-xs space-y-1 px-4">
+                    <p><span className="font-bold">M/S:</span> {customerBillTo.name}</p>
+                    <p><span className="font-bold">Address:</span> {customerBillTo.address}</p>
+                    <p><span className="font-bold">PHONE:</span> {customerBillTo.phoneNumber || '-'}</p>
+                    <p><span className="font-bold">GSTIN:</span> {customerBillTo.gstNumber || '-'}</p>
+                </div>
+            </div>
+
+            {/* Ship To Detail (rightmost) */}
+            <div className="flex-1 py-2 px-0">
+                <div className="text-xs font-bold text-center border-b border-black pb-1 mb-2">Ship To</div>
+                <div className="text-xs space-y-1 px-4">
+                    <p><span className="font-bold">M/S:</span> {invoiceData.customerShipTo.name}</p>
+                    <p><span className="font-bold">Address:</span> {invoiceData.customerShipTo.address}</p>
+                    <p><span className="font-bold">PHONE:</span> {invoiceData.customerShipTo.phoneNumber || '-'}</p>
+                    <p><span className="font-bold">GSTIN:</span> {invoiceData.customerShipTo.gstNumber || '-'}</p>
                 </div>
             </div>
         </div>
@@ -255,6 +265,9 @@ const ProfessionalInvoiceTemplate: React.FC<{ invoiceData: InvoiceData }> = ({ i
                             <TableHead className="border-r border-black text-center text-black text-xs font-bold p-2 w-56">Name of Product / Service</TableHead>
                             <TableHead className="border-r border-black text-center text-black text-xs font-bold p-2 w-16">HSN / SAC</TableHead>
                             <TableHead className="border-r border-black text-center text-black text-xs font-bold p-2 w-16">Qty</TableHead>
+                            {invoiceData.showSqFeet && (
+                                <TableHead className="border-r border-black text-center text-black text-xs font-bold p-2 w-20">Sq.Feet</TableHead>
+                            )}
                             <TableHead className="border-r border-black text-center text-black text-xs font-bold p-2 w-16">Rate</TableHead>
                             <TableHead className="border-r border-black text-center text-black text-xs font-bold p-2 w-20">Taxable Value</TableHead>
                             <TableHead className="border-r border-black text-center text-black text-xs font-bold p-2 w-12">IGST %</TableHead>
@@ -269,7 +282,12 @@ const ProfessionalInvoiceTemplate: React.FC<{ invoiceData: InvoiceData }> = ({ i
                             <TableCell className="border-r border-black text-center text-xs p-2">{startIndex + index + 1}</TableCell>
                             <TableCell className="border-r border-black text-left text-xs p-2 w-56">{item.name}</TableCell>
                             <TableCell className="border-r border-black text-center text-xs p-2">{item.hsnCode || '-'}</TableCell>
-                            <TableCell className="border-r border-black text-center text-xs p-2">{item.quantity}.00 PCS</TableCell>
+                            <TableCell className="border-r border-black text-center text-xs p-2">
+                                {item.quantity}{invoiceData.showPcsInQty ? " Pcs" : ""}
+                            </TableCell>
+                            {invoiceData.showSqFeet && (
+                                <TableCell className="border-r border-black text-center text-xs p-2">{item.sqFeet && item.sqFeet > 0 ? item.sqFeet.toFixed(2) : '-'}</TableCell>
+                            )}
                             <TableCell className="border-r border-black text-center text-xs p-2">{item.price.toFixed(2)}</TableCell>
                             <TableCell className="border-r border-black text-center text-xs p-2">{(item.price * item.quantity).toFixed(2)}</TableCell>
                             <TableCell className="border-r border-black text-center text-xs p-2">{invoiceData.gstRate.toFixed(1)}</TableCell>
@@ -281,9 +299,14 @@ const ProfessionalInvoiceTemplate: React.FC<{ invoiceData: InvoiceData }> = ({ i
                     {isLastPage && (
                         <TableRow className="bg-gray-100 border-b border-black">
                             <TableCell className="border-r border-black text-center text-xs p-2"></TableCell>
-                            <TableCell className="border-r border-black text-center text-xs font-bold p-2 w-56">Total</TableCell>
+                            {invoiceData.showSqFeet && (
+                                <TableCell className="border-r border-black text-center text-xs font-bold p-2 w-56">Total</TableCell>
+                            )}
                             <TableCell className="border-r border-black text-center text-xs p-2"></TableCell>
                             <TableCell className="border-r border-black text-center text-xs font-bold p-2">{items.reduce((sum, item) => sum + item.quantity, 0)}.00</TableCell>
+                            {invoiceData.showSqFeet && (
+                                <TableCell className="border-r border-black text-center text-xs p-2"></TableCell>
+                            )}
                             <TableCell className="border-r border-black text-center text-xs p-2"></TableCell>
                             <TableCell className="border-r border-black text-center text-xs font-bold p-2">{invoiceData.subtotal.toFixed(2)}</TableCell>
                             <TableCell className="border-r border-black text-center text-xs p-2"></TableCell>
@@ -298,7 +321,7 @@ const ProfessionalInvoiceTemplate: React.FC<{ invoiceData: InvoiceData }> = ({ i
 
     const renderFooterContent = () => (
         <>
-            
+
 
             {/* Bank Details and Tax Summary */}
             <div className="border border-black mb-4 flex text-black">
@@ -314,6 +337,12 @@ const ProfessionalInvoiceTemplate: React.FC<{ invoiceData: InvoiceData }> = ({ i
                 <div className="flex-1 p-4">
                     <div className="text-xs space-y-1">
                         <p className="font-bold">Taxable Amount: {formatCurrency(invoiceData.subtotal)}</p>
+                        {invoiceData.packaging !== undefined && (
+                            <p>Packaging: {formatCurrency(invoiceData.packaging)}</p>
+                        )}
+                        {invoiceData.transportationAndOthers !== undefined && (
+                            <p>Transportation & Others: {formatCurrency(invoiceData.transportationAndOthers)}</p>
+                        )}
                         <p>Add : IGST: {formatCurrency(invoiceData.gstAmount)}</p>
                         <p>Total Tax: {formatCurrency(invoiceData.gstAmount)}</p>
                         <p className="font-bold">Total Amount After Tax: ₹ {formatCurrency(invoiceData.total)}</p>
@@ -402,4 +431,4 @@ const ProfessionalInvoiceTemplate: React.FC<{ invoiceData: InvoiceData }> = ({ i
     );
 };
 
-export default ProfessionalInvoiceTemplate; 
+export default ProfessionalInvoiceTemplate;

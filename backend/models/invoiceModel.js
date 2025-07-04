@@ -35,7 +35,7 @@ const invoiceSchema = mongoose.Schema({
       required: false,
     },
     address: {
-      type: String, 
+      type: String,
       required: false,
     },
     panNumber: {
@@ -95,6 +95,7 @@ const invoiceSchema = mongoose.Schema({
       quantity: Number,
       price: Number,
       hsnCode: String,
+      sqFeet: Number,
       category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "categoryModel",
@@ -120,6 +121,8 @@ const invoiceSchema = mongoose.Schema({
   poNo: { type: Number },
   eWayNo: { type: String, match: /^[a-zA-Z0-9]+$/, maxlength: 11 },
   challanDate: { type: String },
+  showPcsInQty: { type: Boolean, default: false },
+  showSqFeet: { type: Boolean, default: false },
 });
 
 const invoiceModel = mongoose.model("invoiceModel", invoiceSchema);

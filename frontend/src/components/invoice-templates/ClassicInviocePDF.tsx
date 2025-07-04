@@ -11,11 +11,69 @@ import {
 } from '@react-pdf/renderer';
 import { formatCurrency } from '@/lib/formatCurrency';
 import Poppins from '../../../public/fonts/Poppins-Regular.ttf';
+import PoppinsBold from '../../../public/fonts/Inter_24pt-Bold.ttf';
 import { Download } from 'lucide-react';
-// import TimesNewRoman from '../../../public/fonts/Times-New-Roman.ttf';
+import Logo from '../../../public/logo.png';
 
-Font.register({ family: 'Poppins', src: Poppins });
-// Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
+const numberToWords = (num: number): string => {
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+
+    const convertLessThanOneThousand = (n: number): string => {
+        if (n === 0) return '';
+
+        if (n < 10) return ones[n];
+
+        if (n < 20) return teens[n - 10];
+
+        if (n < 100) {
+            return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '');
+        }
+
+        return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' ' + convertLessThanOneThousand(n % 100) : '');
+    };
+
+    if (num === 0) return 'Zero';
+
+    let amount = Math.floor(num);
+    const paisa = Math.round((num % 1) * 100);
+
+    let result = '';
+
+    if (amount > 9999999) {
+        result += convertLessThanOneThousand(Math.floor(amount / 10000000)) + ' Crore ';
+        amount = amount % 10000000;
+    }
+
+    if (amount > 99999) {
+        result += convertLessThanOneThousand(Math.floor(amount / 100000)) + ' Lakh ';
+        amount = amount % 100000;
+    }
+
+    if (amount > 999) {
+        result += convertLessThanOneThousand(Math.floor(amount / 1000)) + ' Thousand ';
+        amount = amount % 1000;
+    }
+
+    result += convertLessThanOneThousand(amount);
+
+    result = result.trim() + ' Rupees';
+
+    if (paisa > 0) {
+        result += ' and ' + convertLessThanOneThousand(paisa) + ' Paisa';
+    }
+
+    return result;
+};
+
+Font.register({
+    family: 'Poppins',
+    fonts: [
+        { src: Poppins },
+        { src: PoppinsBold, fontWeight: 'bold' }
+    ]
+});
 
 interface InvoiceData {
     id: string;
@@ -42,6 +100,7 @@ interface InvoiceData {
         cityState: string;
         phone: string;
         email: string;
+        gstin: string;
     };
     items: {
         id: string;
@@ -49,7 +108,11 @@ interface InvoiceData {
         name: string;
         price: number;
         quantity: number;
+        sqFeet?: number;
         hsnCode: string;
+        taxableValue?: number;
+        igstPercent?: number;
+        amount?: number;
     }[];
     subtotal: number;
     gstAmount: number;
@@ -62,470 +125,694 @@ interface InvoiceData {
     challanDate?: string;
     poNo?: string;
     eWayNo?: string;
+    showPcsInQty?: boolean;
+    showSqFeet?: boolean;
 };
 
 const styles = StyleSheet.create({
     page: {
-        padding: 32,
-        paddingTop: 64,
-        paddingBottom: 101,
-        fontSize: 12,
+        padding: 15,
+        paddingTop: 15,
+        paddingBottom: 15,
+        fontSize: 8,
         fontFamily: 'Poppins',
         backgroundColor: '#fff',
         color: '#000',
     },
+    gstinSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    gstinLabel: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        marginRight: 4,
+    },
+    gstinValue: {
+        fontSize: 8,
+    },
+    detailRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+        minHeight: 14,
+    },
+    detailLabel: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        width: '40%',
+    },
+    detailValue: {
+        fontSize: 8,
+        width: '60%',
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        // borderBottomWidth: 0.5,
-        // borderBottomColor: '#999',
-        paddingBottom: 12,
-        marginBottom: 8,
-    },
-    companyName: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#111',
-        fontFamily: 'Poppins',
-    },
-    companyAddress: {
-        fontSize: 11,
-        color: '#333',
-        marginTop: 2,
-        maxWidth: 220,
-        fontFamily: 'Poppins',
-    },
-    qrCodeBox: {
-        width: 66,
-        height: 66,
-        backgroundColor: '#fff',
+        alignItems: 'flex-start',
         borderWidth: 1,
-        borderColor: '#bbb',
+        borderColor: '#000',
+        padding: 6,
+        gap: 6,
+        marginBottom: 0,
+    },
+    logoContainer: {
+        width: 36,
+        height: 36,
+        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    invoiceInfo: {
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-    },
-    invoiceNumber: {
-        fontSize: 12,
-        color: '#222',
-        marginTop: 2,
-        fontWeight: 'bold',
-        fontFamily: 'Poppins',
-    },
-    billToSection: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 18,
-        gap: 12,
-    },
-    billTo: {
-        backgroundColor: '#fff',
-        padding: 12,
-        flex: 1,
-        marginRight: 8,
-        // borderWidth: 1,
-        borderColor: '#222',
-        minHeight: 80,
-        // borderRadius: 0,
+    logo: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
     },
     companyInfo: {
-        backgroundColor: '#fff',
-        padding: 12,
         flex: 1,
-        // borderWidth: 1,
-        borderColor: '#222',
-        minHeight: 80,
-        // borderRadius: 0,
     },
-    cardTitle: {
+    companyName: {
+        fontSize: 12,
         fontWeight: 'bold',
-        marginBottom: 4,
-        fontSize: 13,
-        color: '#111',
-        fontFamily: 'Poppins',
-    },
-    cardField: {
-        fontSize: 11,
         color: '#111',
         marginBottom: 2,
-        fontFamily: 'Poppins',
     },
-    cardSubField: {
+    companyContentRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 1,
+        gap: 8,
+    },
+    contactInfo: {
+        flex: 1,
+        display: 'flex',
+        gap: 1,
+    },
+    addressInfo: {
+        flex: 1,
+        display: 'flex',
+        gap: 1,
+    },
+    companyDetails: {
+        fontSize: 7,
+        color: '#333',
+        marginTop: 1,
+    },
+    qrCode: {
+        width: 48,
+        height: 48,
+    },
+    mainContent: {
+        borderWidth: 1,
+        borderColor: '#000',
+        marginBottom: 8,
+    },
+    customerSection: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderColor: '#000',
+        minHeight: 90,
+    },
+    billTo: {
+        flex: 1,
+        padding: 6,
+        borderLeftWidth: 1,
+        borderColor: '#000',
+        minHeight: 90,
+    },
+    shipTo: {
+        flex: 1,
+        padding: 6,
+        borderLeftWidth: 1,
+        borderColor: '#000',
+        minHeight: 90,
+    },
+    invoiceDetails: {
+        flex: 2,
+        padding: 6,
+
+        minHeight: 100,
+        maxHeight: 200,
+    },
+    detailsContainer: {
+        flexDirection: 'row',
+        flex: 1,
+        gap: 6,
+        marginTop: 2,
+        height: '100%',
+    },
+    detailsColumn: {
+        height: '100%',
+        flex: 1,
+        // padding: 3,
+        justifyContent: 'space-between',
+    },
+    detailsColumnLast: {
+        height: '100%',
+        flex: 1,
+        padding: 4,
+        justifyContent: 'space-between',
+    },
+    sectionTitle: {
         fontSize: 10,
-        color: '#444',
+        fontWeight: 'bold',
+        marginBottom: 8,
+        textAlign: 'center',
+        borderBottomWidth: 1,
+        borderColor: '#000',
+        paddingBottom: 2,
+        marginLeft: -6,
+        marginRight: -6,
+        height: 16,
+    },
+    detailRow: {
+        flexDirection: 'row',
+        gap: 4,
         marginBottom: 2,
+        height: 20,
+        alignItems: 'center',
+    },
+    detailLabel: {
+        fontSize: 7,
+        color: '#222',
+        marginBottom: 1,
+        flex: 1,
+    },
+    detailValue: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        marginBottom: 0,
+        flex: 2,
+    },
+    addressRow: {
+        flexDirection: 'row',
+        marginBottom: 1,
+        alignItems: 'flex-start',
+        paddingLeft: 2,
+    },
+    addressLabel: {
+        fontSize: 7,
+        fontWeight: 'bold',
+        color: '#222',
+        width: 30,
+    },
+    addressValue: {
+        fontSize: 7,
+        flex: 2,
+        paddingLeft: 2,
     },
     table: {
         width: '100%',
-        borderStyle: 'solid',
-        borderWidth: 0.5,
-        borderColor: '#bbb',
-        marginBottom: 18,
-        flexDirection: 'column',
-        borderRadius: 4,
-        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#000',
+        marginTop: -1,
     },
     tableHeader: {
         flexDirection: 'row',
-        backgroundColor: '#f5f5f5',
         borderBottomWidth: 1,
-        borderBottomColor: '#bbb',
-    },
-    tableHeaderCell: {
-        fontWeight: 'bold',
-        fontSize: 12,
-        color: '#222',
-        paddingVertical: 10,
-        paddingHorizontal: 8,
-        fontFamily: 'Poppins',
-        // No right border for header
+        borderColor: '#000',
+        backgroundColor: '#f5f5f5',
     },
     tableRow: {
         flexDirection: 'row',
-        backgroundColor: '#fff',
-        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderColor: '#000',
+        minHeight: 16,
     },
-    tableRowAlt: {
+    tableRowTotal: {
         flexDirection: 'row',
-        backgroundColor: '#fafbfc',
-        alignItems: 'center',
+        borderBottomWidth: 0,
+        borderColor: '#000',
+        fontWeight: 'bold',
+        minHeight: 16,
     },
     tableCell: {
-        paddingVertical: 8,
-        paddingHorizontal: 8,
-        fontSize: 12,
-        color: '#111',
-        fontFamily: 'Poppins',
-        borderBottomWidth: 0.25,
-        borderBottomColor: '#eee',
-        // No right border for cleaner look
+        padding: 4,
+        textAlign: 'left',
+        borderRightWidth: 1,
+        borderRightColor: '#000',
+        fontSize: 7,
     },
-    lastTableCell: {
-        // No right border
+    tableCellCenter: {
+        padding: 4,
+        textAlign: 'center',
+        borderRightWidth: 1,
+        borderRightColor: '#000',
+        fontSize: 7,
     },
-    summary: {
-        alignItems: 'flex-end',
-        marginTop: 12,
-        backgroundColor: '#fff',
-        // borderRadius: 0,
-        padding: 12,
-        borderWidth: 0.5,
-        borderColor: '#222',
+    tableCellRight: {
+        padding: 4,
+        textAlign: 'right',
+        borderRightWidth: 1,
+        borderRightColor: '#000',
+        fontSize: 7,
+    },
+    tableCellLast: {
+        padding: 4,
+        textAlign: 'right',
+        fontSize: 7,
+    },
+    bankAndTotalRow: {
+        flexDirection: 'row',
+        borderTopWidth: 1,
+
+        marginTop: -4,
+    },
+    bankDetails: {
+        flex: 1,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#000',
+        borderTopWidth: 0,
+        marginRight: -1,
+    },
+    totalSummary: {
+        width: 240,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#000',
+        borderTopWidth: 0,
     },
     summaryRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        fontSize: 12,
-        marginBottom: 2,
-        fontFamily: 'Poppins',
+        paddingVertical: 1,
+        paddingHorizontal: 2,
     },
     summaryLabel: {
+        fontSize: 7,
+        fontWeight: 'bold',
         color: '#222',
-        fontFamily: 'Poppins',
     },
     summaryValue: {
-        color: '#111',
+        fontSize: 7,
         fontWeight: 'bold',
-        fontFamily: 'Poppins',
+        textAlign: 'right',
+        color: '#222',
     },
-    totalRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        fontSize: 15,
+    bankTitle: {
+        fontSize: 9,
         fontWeight: 'bold',
-        marginTop: 8,
-        borderTopWidth: 1,
-        borderTopColor: '#222',
-        paddingTop: 6,
-        color: '#111',
+        marginBottom: 4,
+        borderBottomWidth: 1,
+        borderColor: '#000',
+        paddingBottom: 2,
+        marginLeft: -8,
+        marginRight: -8,
+        paddingLeft: 8,
+    },
+    amountInWords: {
+        fontSize: 8,
         fontFamily: 'Poppins',
+        fontWeight: 'bold',
+        padding: 6,
+        borderBottomWidth: 1,
+        borderColor: '#000',
+        marginBottom: 3,
+        marginLeft: -8,
+        marginRight: -8,
+        paddingLeft: 8,
+    },
+    bankText: {
+        fontSize: 7,
+        marginBottom: 1,
+        lineHeight: 1.2,
+        paddingLeft: 2,
+    },
+    termsAndSignatureRow: {
+        flexDirection: 'row',
+        borderTopWidth: 0,
+        marginTop: -1,
+    },
+    termsSection: {
+        flex: 1,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#000',
+        borderTopWidth: 0,
+        marginRight: -1,
+    },
+    signatureSection: {
+        width: 160,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#000',
+        borderTopWidth: 0,
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    certificationText: {
+        fontSize: 6,
+        textAlign: 'center',
+        marginBottom: 2,
+        paddingHorizontal: 4,
+    },
+    companyNameText: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 4,
+    },
+    signatureSpace: {
+        height: 24,
+        width: 120,
+        marginBottom: 2,
+    },
+    signatureBox: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        width: 120,
+        borderTopWidth: 1,
+        borderColor: '#000',
+        paddingTop: 2,
+    },
+    addressTitle: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        marginBottom: 2,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        borderBottomWidth: 1,
+        borderColor: '#000',
+        marginLeft: -6,
+        marginRight: -6,
+        paddingBottom: 2,
+        height: 16,
+    },
+    footer: {
+        position: 'absolute',
+        bottom: 20,
+        left: 20,
+        right: 20,
+        fontSize: 7,
+        textAlign: 'center',
+    },
+    gstinSection: {
+        borderWidth: 1,
+        borderColor: '#000',
+        padding: 4,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderTopWidth: 0,
+        marginBottom: 2,
+        backgroundColor: '#fff',
+    },
+    gstinLabel: {
+        fontSize: 8,
+        color: '#222',
+    },
+    gstinValue: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        color: '#222',
     },
 });
 
 const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> = ({ invoiceData, qrCode }) => {
-    const { customerBillTo, customerShipTo, invoiceNumber, invoiceDate, items, companyDetails } = invoiceData;
+    if (!invoiceData) return null;
 
-    // Split items based on pagination rules
-    const firstPageItems = items.slice(0, 7);
-    const remainingItems = items.slice(7);
-    const additionalPages: Array<Array<typeof items[0]>> = [];
+    const calculateTotals = (items: InvoiceData['items']) => {
+        return items.reduce((acc, item) => {
+            const taxableValue = item.price * item.quantity;
+            const igstAmount = taxableValue * ((item.igstPercent || 0) / 100);
+            const totalAmount = taxableValue + igstAmount;
 
-    // Split remaining items into pages of 14 each
-    for (let i = 0; i < remainingItems.length; i += 14) {
-        additionalPages.push(remainingItems.slice(i, i + 14));
-    }
-
-    const renderHeader = () => (
-        <>
-        <View style={styles.header}>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                <Image src={"/invoice-logo.png"} style={{ width: 64, height: 64 }} />
-                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <Text style={styles.companyName}>{companyDetails.name}</Text>
-                    {companyDetails.phone && <Text style={styles.companyAddress}>{companyDetails.phone}</Text>}
-                    {companyDetails.email && <Text style={styles.companyAddress}>{companyDetails.email}</Text>}
-                    <Text style={styles.companyAddress}>{companyDetails.address}, {companyDetails.cityState}</Text>
-                </View>
-            </View>
-            <View style={styles.invoiceInfo}>
-                <View style={styles.qrCodeBox}>
-                    {qrCode ? <Image src={qrCode} style={{ width: 64, height: 64 }} /> : <Text style={{ fontSize: 8, color: '#aaa' }}>QR CODE</Text>}
-                </View>
-            </View>
-        </View>
-        </>
-    );
-
-    const renderCustomerDetails = () => (
-        <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: '#bbb', borderRadius: 8, marginBottom: 16, backgroundColor: '#fff', overflow: 'hidden' }} wrap={false}>
-            {/* Bill To */}
-            <View style={{ flex: 1, borderRightWidth: 1, borderRightColor: '#bbb', padding: 0 }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 12, textAlign: 'center', borderBottomWidth: 1, borderBottomColor: '#bbb', marginBottom: 4, paddingBottom: 2 }}>Bill To</Text>
-                <View style={{ padding: 8 }}>
-                    <Text style={{ fontSize: 11, marginBottom: 2 }}><Text style={{ fontWeight: 'bold' }}>M/S:</Text> {customerBillTo.name || '-'}</Text>
-                    <Text style={{ fontSize: 11, marginBottom: 2 }}><Text style={{ fontWeight: 'bold' }}>Address:</Text> {customerBillTo.address || '-'}</Text>
-                    <Text style={{ fontSize: 11, marginBottom: 2 }}><Text style={{ fontWeight: 'bold' }}>PHONE:</Text> {customerBillTo.phoneNumber || '-'}</Text>
-                    <Text style={{ fontSize: 11, marginBottom: 2 }}><Text style={{ fontWeight: 'bold' }}>GSTIN:</Text> {customerBillTo.gstNumber || '-'}</Text>
-                </View>
-            </View>
-            {/* Ship To */}
-            <View style={{ flex: 1.2, borderRightWidth: 1, borderRightColor: '#bbb', padding: 0 }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 12, textAlign: 'center', borderBottomWidth: 1, borderBottomColor: '#bbb', marginBottom: 4, paddingBottom: 2 }}>Ship To</Text>
-                <View style={{ padding: 8 }}>
-                    <Text style={{ fontSize: 11, marginBottom: 2 }}><Text style={{ fontWeight: 'bold' }}>M/S:</Text> {customerShipTo.name || '-'}</Text>
-                    <Text style={{ fontSize: 11, marginBottom: 2 }}><Text style={{ fontWeight: 'bold' }}>Address:</Text> {customerShipTo.address || '-'}</Text>
-                    <Text style={{ fontSize: 11, marginBottom: 2 }}><Text style={{ fontWeight: 'bold' }}>PHONE:</Text> {customerShipTo.phoneNumber || '-'}</Text>
-                    <Text style={{ fontSize: 11, marginBottom: 2 }}><Text style={{ fontWeight: 'bold' }}>GSTIN:</Text> {customerShipTo.gstNumber || '-'}</Text>
-                </View>
-            </View>
-            {/* Invoice Details */}
-            <View style={{ flex: 1, padding: 0 }}>
-                <View style={{ borderBottomWidth: 1, borderBottomColor: '#bbb', paddingBottom: 3 }}>
-                    <Text style={{ fontSize: 12, fontWeight: 'bold', textAlign: 'center' }}>Invoice Details</Text>
-                </View>
-                <View style={{ flexDirection: 'row', borderTopWidth: 0, borderBottomColor: '#bbb', paddingBottom: 2, paddingTop: 2 }}>
-                    {/* Left Column */}
-                    <View style={{ flex: 1, borderRightWidth: 1, borderRightColor: '#bbb' }}>
-                        <View style={{ borderBottomWidth: 1, borderColor: '#bbb', padding: 2 }}>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>Invoice No.</Text>
-                            <Text style={{ fontSize: 10 }}>{invoiceNumber}</Text>
-                        </View>
-                        <View style={{ borderBottomWidth: 1, borderColor: '#bbb', padding: 2 }}>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>Challan No.</Text>
-                            <Text style={{ fontSize: 10 }}>{invoiceData.challanNo || '-'}</Text>
-                        </View>
-                        <View style={{ borderBottomWidth: 1, borderColor: '#bbb', padding: 2 }}>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>DELIVERY DATE</Text>
-                            <Text style={{ fontSize: 10 }}>{invoiceDate}</Text>
-                        </View>
-                        <View style={{ borderBottomWidth: 0, borderColor: '#bbb', padding: 2 }}>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>P.O. No.</Text>
-                            <Text style={{ fontSize: 10 }}>{invoiceData.poNo || '-'}</Text>
-                        </View>
-                    </View>
-                    {/* Right Column */}
-                    <View style={{ flex: 1 }}>
-                        <View style={{ borderBottomWidth: 1, borderColor: '#bbb', padding: 2 }}>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>Invoice Date</Text>
-                            <Text style={{ fontSize: 10 }}>{invoiceDate}</Text>
-                        </View>
-                        <View style={{ borderBottomWidth: 1, borderColor: '#bbb', padding: 2 }}>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>Challan Date</Text>
-                            <Text style={{ fontSize: 10 }}>{invoiceData.challanDate || '-'}</Text>
-                        </View>
-                        <View style={{ borderBottomWidth: 1, borderColor: '#bbb', padding: 2 }}>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>Reverse Charge</Text>
-                            <Text style={{ fontSize: 10 }}>No</Text>
-                        </View>
-                        <View style={{ borderBottomWidth: 0, padding: 2 }}>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>E-Way No.</Text>
-                            <Text style={{ fontSize: 10 }}>{invoiceData.eWayNo || '-'}</Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
-        </View>
-    );
-
-    const renderItemsTable = (pageItems: typeof items) => (
-        <View style={[styles.table, { marginBottom: 32 }]}>
-            {/* Table Header */}
-            <View style={styles.tableHeader} wrap={false}>
-                <Text style={[styles.tableHeaderCell, { flex: 2 }]}>Item</Text>
-                <Text style={[styles.tableHeaderCell, { flex: 1.2 }]}>HSN Code</Text>
-                <Text style={[styles.tableHeaderCell, { flex: 1, textAlign: 'right' }]}>Quantity</Text>
-                <Text style={[styles.tableHeaderCell, { flex: 1.3, textAlign: 'right' }]}>Unit Price</Text>
-                <Text style={[styles.tableHeaderCell, { flex: 1.5, textAlign: 'right' }]}>Total</Text>
-            </View>
-            {/* Table Body */}
-            {pageItems.map((item, idx) => (
-                <View
-                    style={idx % 2 === 0 ? styles.tableRow : styles.tableRowAlt}
-                    key={item.id}
-                    wrap={false}
-                >
-                    <Text style={[styles.tableCell, { flex: 2 }]}>{item.name}</Text>
-                    <Text style={[styles.tableCell, { flex: 1.2 }]}>{item.hsnCode ? item.hsnCode : '-'}</Text>
-                    <Text style={[styles.tableCell, { flex: 1, textAlign: 'right' }]}>{item.quantity}</Text>
-                    <Text style={[styles.tableCell, { flex: 1.3, textAlign: 'right' }]}>₹{formatCurrency(item.price)}</Text>
-                    <Text style={[styles.tableCell, { flex: 1.5, textAlign: 'right' }]}>₹{formatCurrency(item.price * item.quantity)}</Text>
-                </View>
-            ))}
-        </View>
-    );
-
-    const renderFooterContent = (isLastPage: boolean = false) => (
-        <>
-            {isLastPage && (
-                <>
-                    {/* Financial Summary */}
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 20, marginBottom: 20 }}>
-                        <View style={{ width: '60%', flexDirection: 'column', gap: 6 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', fontSize: 13, color: '#222' }}>
-                                <Text>Subtotal</Text>
-                                <Text>₹{formatCurrency(invoiceData.subtotal)}</Text>
-                            </View>
-                            {invoiceData.transportationAndOthers !== undefined && (
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', fontSize: 13, color: '#222' }}>
-                                    <Text>Transportation & Others</Text>
-                                    <Text>₹{formatCurrency(invoiceData.transportationAndOthers)}</Text>
-                                </View>
-                            )}
-                            {invoiceData.packaging !== undefined && (
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', fontSize: 13, color: '#222' }}>
-                                    <Text>Packaging</Text>
-                                    <Text>₹{formatCurrency(invoiceData.packaging)}</Text>
-                                </View>
-                            )}
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', fontSize: 13, color: '#222' }}>
-                                <Text>GST ({invoiceData.gstRate}%)</Text>
-                                <Text>₹{formatCurrency(invoiceData.gstAmount)}</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', fontSize: 15, color: '#111', fontWeight: 'bold', marginTop: 8, borderTopWidth: 1, borderTopColor: '#bbb', paddingTop: 8 }}>
-                                <Text>Total</Text>
-                                <Text>₹{formatCurrency(invoiceData.total)}</Text>
-                            </View>
-                        </View>
-                    </View>
-                    {/* Bank Details and Terms & Conditions (now in normal flow) */}
-                    <View style={{ padding: 10, marginBottom: 10, backgroundColor: '#fff' }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 12, marginBottom: 4 }}>Bank Details:</Text>
-                        <Text style={{ fontSize: 11, marginBottom: 2 }}>Bank Name : ICICI</Text>
-                        <Text style={{ fontSize: 11, marginBottom: 2 }}>Account Name : DYNAMIC ENTERPRISES</Text>
-                        <Text style={{ fontSize: 11, marginBottom: 2 }}>Branch : Sinhgad  Road Branch</Text>
-                        <Text style={{ fontSize: 11, marginBottom: 2 }}>A/C Type : Currrent</Text>
-                        <Text style={{ fontSize: 11, marginBottom: 2 }}>A/C No : 180205500134</Text>
-                        <Text style={{ fontSize: 11 }}>IFSC Code : ICIC0001802</Text>
-                    </View>
-                    <View style={{ padding: 10, backgroundColor: '#fff' }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 12, marginBottom: 4 }}>Terms and Conditions:</Text>
-                        <Text style={{ fontSize: 11, marginBottom: 2 }}>- We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</Text>
-                        <Text style={{ fontSize: 11 }}>- Payment is due within 30 days of the invoice date.</Text>
-                    </View>
-                </>
-            )}
-        </>
-    );
+            return {
+                quantity: acc.quantity + item.quantity,
+                taxableValue: acc.taxableValue + taxableValue,
+                igstAmount: acc.igstAmount + igstAmount,
+                totalAmount: acc.totalAmount + totalAmount,
+                totalTax: acc.totalTax + igstAmount
+            };
+        }, { quantity: 0, taxableValue: 0, igstAmount: 0, totalAmount: 0, totalTax: 0 });
+    };
 
     return (
         <Document>
-            {/* First Page */}
             <Page size="A4" style={styles.page}>
-                {renderHeader()}
-                {/* Wrap main content in a View with extra margin at the bottom to prevent footer overlap */}
-                <View style={{ marginBottom: 72 }}>
-                    {renderCustomerDetails()}
-                    {renderItemsTable(firstPageItems)}
-                    {additionalPages.length === 0 && renderFooterContent(true)}
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image src={Logo} style={styles.logo} />
+                    </View>
+                    <View style={styles.companyInfo}>
+                        <Text style={styles.companyName}>{invoiceData.companyDetails.name}</Text>
+                        <View style={styles.companyContentRow}>
+                            <View style={styles.contactInfo}>
+                                <Text style={styles.companyDetails}>Tel: {invoiceData.companyDetails.phone}</Text>
+                                <Text style={styles.companyDetails}>Web: www.gfttools.com</Text>
+                                <Text style={styles.companyDetails}>Email: {invoiceData.companyDetails.email}</Text>
+                            </View>
+                            <View style={styles.addressInfo}>
+                                <Text style={styles.companyDetails}>{invoiceData.companyDetails.address}</Text>
+                                <Text style={styles.companyDetails}>{invoiceData.companyDetails.cityState}</Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View>
+                        {qrCode ? (
+                            <Image src={qrCode} style={styles.qrCode} />
+                        ) : (
+                            <View style={styles.qrCode} />
+                        )}
+                    </View>
                 </View>
 
-                {/* Classic UI Footer with border, background, and spaced info */}
-                <View
-                    style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: 52,
-                        backgroundColor: '#f3f3f3',
-                        borderTopWidth: 1,
-                        borderTopColor: '#bbb',
-                        paddingHorizontal: 32,
-                        paddingVertical: 8,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                    }}
-                    fixed
-                >
-                    <Text
-                        style={{ fontSize: 10, color: '#222' }}
-                        render={() => `Invoice No: ${invoiceNumber}`}
-                    />
-                    <Text
-                        style={{ fontSize: 10, color: '#222' }}
-                        render={() => `Invoice Date: ${invoiceDate}`}
-                    />
-                    <Text
-                        style={{ fontSize: 10, color: '#222' }}
-                        render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
-                    />
-                    <Text style={{ position: 'absolute', left: 32, bottom: 4, fontSize: 9, color: '#888', width: '100%', textAlign: 'center' }}>
-                        This is an electronically generated document, no signature is required
-                    </Text>
+                {/* GSTIN Section */}
+                <View style={styles.gstinSection}>
+                    <Text style={styles.gstinLabel}>GSTIN: </Text>
+                    <Text style={styles.gstinValue}>{invoiceData.companyDetails.gstin || ': 24HDE7487RE5RT4'}</Text>
                 </View>
+
+                {/* Main Content */}
+                <View style={styles.mainContent}>
+                    <View style={styles.customerSection}>
+                        <View style={styles.invoiceDetails}>
+                            <Text style={styles.sectionTitle}>TAX INVOICE</Text>
+                            <View style={styles.detailsContainer}>
+                                <View style={styles.detailsColumn}>
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>Invoice No:</Text>
+                                        <Text style={styles.detailValue}>{invoiceData.invoiceNumber}</Text>
+                                    </View>
+
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>Challan No:</Text>
+                                        <Text style={styles.detailValue}>{invoiceData.challanNo || '-'}</Text>
+                                    </View>
+
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>DELIVERY DATE:</Text>
+                                        <Text style={styles.detailValue}>{invoiceData.invoiceDate}</Text>
+                                    </View>
+
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>P.O. No:</Text>
+                                        <Text style={styles.detailValue}>{invoiceData.poNo || '-'}</Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.detailsColumnLast}>
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>Invoice Date:</Text>
+                                        <Text style={styles.detailValue}>{invoiceData.invoiceDate}</Text>
+                                    </View>
+
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>Challan Date:</Text>
+                                        <Text style={styles.detailValue}>{invoiceData.challanDate || '-'}</Text>
+                                    </View>
+
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>Reverse Charge:</Text>
+                                        <Text style={styles.detailValue}>No</Text>
+                                    </View>
+
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>E-Way No:</Text>
+                                        <Text style={styles.detailValue}>{invoiceData.eWayNo || '-'}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={styles.billTo}>
+                            <Text style={styles.addressTitle}>Bill To</Text>
+                            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+                                <View style={styles.addressRow}>
+                                    <Text style={styles.addressLabel}>Name:</Text>
+                                    <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerBillTo.name}</Text>
+                                </View>
+
+                                <View style={styles.addressRow}>
+                                    <Text style={styles.addressLabel}>Address:</Text>
+                                    <Text style={styles.addressValue}>{invoiceData.customerBillTo.address}</Text>
+                                </View>
+
+                                <View style={styles.addressRow}>
+                                    <Text style={styles.addressLabel}>PHONE:</Text>
+                                    <Text style={styles.addressValue}>{invoiceData.customerBillTo.phoneNumber || '-'}</Text>
+                                </View>
+
+                                <View style={styles.addressRow}>
+                                    <Text style={styles.addressLabel}>GSTIN:</Text>
+                                    <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerBillTo.gstNumber || '-'}</Text>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={styles.shipTo}>
+                            <Text style={styles.addressTitle}>Ship To</Text>
+                            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+                                <View style={styles.addressRow}>
+                                    <Text style={styles.addressLabel}>Name:</Text>
+                                    <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerShipTo.name}</Text>
+                                </View>
+
+                                <View style={styles.addressRow}>
+                                    <Text style={styles.addressLabel}>Address:</Text>
+                                    <Text style={styles.addressValue}>{invoiceData.customerShipTo.address}</Text>
+                                </View>
+
+                                <View style={styles.addressRow}>
+                                    <Text style={styles.addressLabel}>PHONE:</Text>
+                                    <Text style={styles.addressValue}>{invoiceData.customerShipTo.phoneNumber || '-'}</Text>
+                                </View>
+
+                                <View style={styles.addressRow}>
+                                    <Text style={styles.addressLabel}>GSTIN:</Text>
+                                    <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerShipTo.gstNumber || '-'}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+
+                    {/* Table */}
+                    <View style={styles.table}>
+                        <View style={styles.tableHeader}>
+                            <Text style={[styles.tableCell, { flex: 0.4, fontWeight: 'bold' }]}>Sr. No.</Text>
+                            <Text style={[styles.tableCell, { flex: 2.2, fontWeight: 'bold' }]}>Name of Product / Service</Text>
+                            <Text style={[styles.tableCell, { flex: 0.8, fontWeight: 'bold' }]}>HSN / SAC</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.4, fontWeight: 'bold' }]}>Qty</Text>
+                            {invoiceData.showSqFeet && (
+                                <Text style={[styles.tableCellCenter, { flex: 0.6, fontWeight: 'bold' }]}>Sq.Feet</Text>
+                            )}
+                            <Text style={[styles.tableCellRight, { flex: 0.8, fontWeight: 'bold' }]}>Rate</Text>
+                            <Text style={[styles.tableCellRight, { flex: 1, fontWeight: 'bold' }]}>Taxable Value</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.4, fontWeight: 'bold' }]}>IGST %</Text>
+                            <Text style={[styles.tableCellRight, { flex: 0.8, fontWeight: 'bold' }]}>Tax Amount</Text>
+                            <Text style={[styles.tableCellLast, { flex: 1, fontWeight: 'bold' }]}>Total Amount</Text>
+                        </View>
+                        {invoiceData.items.map((item, index) => (
+                            <View style={styles.tableRow} key={item.id}>
+                                <Text style={[styles.tableCell, { flex: 0.4 }]}>{index + 1}</Text>
+                                <Text style={[styles.tableCell, { flex: 2.2, fontWeight: 'bold' }]}>{item.name}</Text>
+                                <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.hsnCode}</Text>
+                                <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>
+                                    {item.quantity}{invoiceData.showPcsInQty ? " Pcs" : ""}
+                                </Text>
+                                {invoiceData.showSqFeet && (
+                                    <Text style={[styles.tableCellCenter, { flex: 0.6 }]}>
+                                        {item.sqFeet && item.sqFeet > 0 ? item.sqFeet.toFixed(2) : "-"}
+                                    </Text>
+                                )}
+                                <Text style={[styles.tableCellRight, { flex: 0.8 }]}>{formatCurrency(item.price)}</Text>
+                                <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(item.price * item.quantity)}</Text>
+                                <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>{invoiceData.gstRate || 0}%</Text>
+                                <Text style={[styles.tableCellRight, { flex: 0.8 }]}>{formatCurrency((item.price * item.quantity) * ((invoiceData.gstRate || 0) / 100))}</Text>
+                                <Text style={[styles.tableCellLast, { flex: 1 }]}>{formatCurrency((item.price * item.quantity) * (1 + (invoiceData.gstRate || 0) / 100))}</Text>
+                            </View>
+                        ))}
+                        <View style={styles.tableRowTotal}>
+                            <Text style={[styles.tableCell, { flex: 0.4 }]}>Total</Text>
+                            <Text style={[styles.tableCell, { flex: 2.2 }]}></Text>
+                            <Text style={[styles.tableCell, { flex: 0.8 }]}></Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>{calculateTotals(invoiceData.items).quantity}</Text>
+                            {invoiceData.showSqFeet && (
+                                <Text style={[styles.tableCellCenter, { flex: 0.6 }]}></Text>
+                            )}
+                            <Text style={[styles.tableCellRight, { flex: 0.8 }]}></Text>
+                            <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(calculateTotals(invoiceData.items).taxableValue)}</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.4 }]}></Text>
+                            <Text style={[styles.tableCellRight, { flex: 0.8 }]}>{formatCurrency(invoiceData.gstAmount)}</Text>
+                            <Text style={[styles.tableCellLast, { flex: 1 }]}>{formatCurrency(invoiceData.total)}</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Bank Details and Total Summary */}
+                <View style={styles.bankAndTotalRow}>
+                    <View style={styles.bankDetails}>
+                        <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Total Amount in Words</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }, { paddingVertical: 4 }]}>{numberToWords(invoiceData.total)}</Text>
+
+                        <Text style={[styles.bankTitle, { borderTopWidth: 1, borderColor: '#000', paddingTop: 4 }, { paddingLeft: 6 }]}>Bank Details</Text>
+                        <Text style={styles.bankText}>Bank Name: State Bank of India</Text>
+                        <Text style={styles.bankText}>Branch Name: RAF CAMP</Text>
+                        <Text style={styles.bankText}>Bank Account Number: 20000000452</Text>
+                        <Text style={styles.bankText}>Bank Branch IFSC: SBIN000488</Text>
+                    </View>
+
+                    <View style={styles.totalSummary}>
+                        <Text style={styles.bankTitle}>Amount Summary</Text>
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>Taxable Amount:</Text>
+                            <Text style={styles.summaryValue}>{formatCurrency(calculateTotals(invoiceData.items).taxableValue)}</Text>
+                        </View>
+                        {invoiceData.packaging !== undefined && (
+                            <View style={styles.summaryRow}>
+                                <Text style={styles.summaryLabel}>Packaging:</Text>
+                                <Text style={styles.summaryValue}>{formatCurrency(invoiceData.packaging)}</Text>
+                            </View>
+                        )}
+                        {invoiceData.transportationAndOthers !== undefined && (
+                            <View style={styles.summaryRow}>
+                                <Text style={styles.summaryLabel}>Transportation & Others:</Text>
+                                <Text style={styles.summaryValue}>{formatCurrency(invoiceData.transportationAndOthers)}</Text>
+                            </View>
+                        )}
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>Total Tax:</Text>
+                            <Text style={styles.summaryValue}>{formatCurrency(invoiceData.gstAmount)}</Text>
+                        </View>
+                        <View style={[styles.summaryRow, { marginTop: 4, borderTopWidth: 1, borderColor: '#000', paddingTop: 6 }]}>
+                            <Text style={styles.summaryLabel}>Total Amount After Tax:</Text>
+                            <Text style={styles.summaryValue}>{formatCurrency(invoiceData.total)}</Text>
+                        </View>
+                        <View style={[styles.summaryRow, { marginTop: 6 }]}>
+                            <Text style={[styles.summaryLabel, { fontWeight: 'bold' }]}>(E & O.E)</Text>
+                        </View>
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>GST Payable on Reverse Charge:</Text>
+                            <Text style={styles.summaryValue}>N.A.</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Terms and Conditions */}
+                <View style={styles.termsAndSignatureRow}>
+                    <View style={styles.termsSection}>
+                        <Text style={styles.bankTitle}>Terms and Conditions</Text>
+                        <Text style={styles.bankText}>1. Subject to Ahmedabad Jurisdiction.</Text>
+                        <Text style={styles.bankText}>2. Our responsibility ceases as soon as the goods leave our premises.</Text>
+                        <Text style={styles.bankText}>3. Goods once sold will not be taken back.</Text>
+                        <Text style={styles.bankText}>4. Delivery ex-premises.</Text>
+                    </View>
+
+                    <View style={styles.signatureSection}>
+                        <Text style={styles.certificationText}>Certified that the particulars given above are true and correct.</Text>
+                        <Text style={styles.companyNameText}>For {invoiceData.companyDetails.name}</Text>
+                        <View style={styles.signatureSpace} />
+                        <Text style={styles.signatureBox}>Authorised Signatory</Text>
+                    </View>
+                </View>
+
+                {/* Footer */}
+                <Text style={styles.footer}>
+                    Invoice No: {invoiceData.invoiceNumber} | Invoice Date: {invoiceData.invoiceDate} | Page 1 of 1
+                </Text>
             </Page>
-
-            {/* Additional Pages */}
-            {additionalPages.map((pageItems, pageIndex) => (
-                <Page size="A4" style={styles.page} key={pageIndex}>
-                    {renderHeader()}
-                    <View style={{ marginBottom: 72 }}>
-                        {renderCustomerDetails()}
-                        {renderItemsTable(pageItems)}
-                        {pageIndex === additionalPages.length - 1 && renderFooterContent(true)}
-                    </View>
-
-                    <View
-                        style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: 52,
-                            backgroundColor: '#f3f3f3',
-                            borderTopWidth: 1,
-                            borderTopColor: '#bbb',
-                            paddingHorizontal: 32,
-                            paddingVertical: 8,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                        }}
-                        fixed
-                    >
-                        <Text
-                            style={{ fontSize: 10, color: '#222' }}
-                            render={() => `Invoice No: ${invoiceNumber}`}
-                        />
-                        <Text
-                            style={{ fontSize: 10, color: '#222' }}
-                            render={() => `Invoice Date: ${invoiceDate}`}
-                        />
-                        <Text
-                            style={{ fontSize: 10, color: '#222' }}
-                            render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
-                        />
-                        <Text style={{ position: 'absolute', left: 32, bottom: 4, fontSize: 9, color: '#888', width: '100%', textAlign: 'center' }}>
-                            This is an electronically generated document, no signature is required
-                        </Text>
-                    </View>
-                </Page>
-            ))}
         </Document>
     );
 };

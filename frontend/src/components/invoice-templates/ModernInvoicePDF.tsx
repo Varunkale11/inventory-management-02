@@ -15,6 +15,58 @@ import PoppinsBold from '../../../public/fonts/Inter_24pt-Bold.ttf';
 import { Download } from 'lucide-react';
 import Logo from '../../../public/logo.png';
 
+const numberToWords = (num: number): string => {
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+
+    const convertLessThanOneThousand = (n: number): string => {
+        if (n === 0) return '';
+
+        if (n < 10) return ones[n];
+
+        if (n < 20) return teens[n - 10];
+
+        if (n < 100) {
+            return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '');
+        }
+
+        return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' ' + convertLessThanOneThousand(n % 100) : '');
+    };
+
+    if (num === 0) return 'Zero';
+
+    let amount = Math.floor(num);
+    const paisa = Math.round((num % 1) * 100);
+
+    let result = '';
+
+    if (amount > 9999999) {
+        result += convertLessThanOneThousand(Math.floor(amount / 10000000)) + ' Crore ';
+        amount = amount % 10000000;
+    }
+
+    if (amount > 99999) {
+        result += convertLessThanOneThousand(Math.floor(amount / 100000)) + ' Lakh ';
+        amount = amount % 100000;
+    }
+
+    if (amount > 999) {
+        result += convertLessThanOneThousand(Math.floor(amount / 1000)) + ' Thousand ';
+        amount = amount % 1000;
+    }
+
+    result += convertLessThanOneThousand(amount);
+
+    result = result.trim() + ' Rupees';
+
+    if (paisa > 0) {
+        result += ' and ' + convertLessThanOneThousand(paisa) + ' Paisa';
+    }
+
+    return result;
+};
+
 Font.register({
     family: 'Poppins',
     fonts: [
@@ -56,6 +108,7 @@ interface InvoiceData {
         name: string;
         price: number;
         quantity: number;
+        sqFeet?: number;
         hsnCode: string;
         taxableValue?: number;
         igstPercent?: number;
@@ -72,11 +125,13 @@ interface InvoiceData {
     challanDate?: string;
     poNo?: string;
     eWayNo?: string;
+    showPcsInQty?: boolean;
+    showSqFeet?: boolean;
 };
 
 const styles = StyleSheet.create({
     page: {
-        padding: 20,
+        padding: 15,
         fontSize: 9,
         fontFamily: 'Poppins',
         backgroundColor: '#fff',
@@ -88,12 +143,12 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         borderWidth: 1,
         borderColor: '#000',
-        padding: 8,
-        gap: 10,
+        padding: 6,
+        gap: 8,
     },
     logoContainer: {
-        width: 70,
-        height: 70,
+        width: 60,
+        height: 60,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -107,16 +162,16 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     companyName: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: 'bold',
         color: '#000',
-        marginBottom: 4,
+        marginBottom: 3,
     },
     companyContentRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 2,
-        gap: 20,
+        marginTop: 1,
+        gap: 16,
     },
     contactInfo: {
         flex: 1,
@@ -133,8 +188,8 @@ const styles = StyleSheet.create({
         lineHeight: 1.4,
     },
     qrCode: {
-        width: 64,
-        height: 64,
+        width: 56,
+        height: 56,
     },
     mainContent: {
         borderWidth: 1,
@@ -145,28 +200,50 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderColor: '#000',
+        minHeight: 140,
     },
     billTo: {
         flex: 1,
         padding: 3,
-        borderRightWidth: 1,
+        borderLeftWidth: 1,
         borderColor: '#000',
+        minHeight: 140,
     },
     shipTo: {
         flex: 1,
         padding: 3,
-        borderRightWidth: 1,
+        borderLeftWidth: 1,
         borderColor: '#000',
+        minHeight: 140,
     },
     invoiceDetails: {
-        flex: 1,
+        flex: 2,
         padding: 3,
+        minHeight: 140,
+    },
+    detailsContainer: {
+        flexDirection: 'row',
+        height: '100%',
+        flex: 1,
+    },
+    detailsColumn: {
+        flex: 1,
+        padding: 2,
+        borderRightWidth: 1,
+        borderColor: '#000',
+        height: '100%',
+    },
+    detailsColumnLast: {
+        flex: 1,
+        padding: 2,
+        paddingLeft: 4,
+        height: '100%',
     },
     sectionTitle: {
-        fontSize: 10,
+        fontSize: 9,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
-        marginBottom: 4,
+        marginBottom: 3,
         textAlign: 'center',
         borderBottomWidth: 1,
         borderColor: '#000',
@@ -187,7 +264,7 @@ const styles = StyleSheet.create({
     },
     detailValue: {
         fontSize: 8,
-        marginBottom: 3,
+        marginBottom: 2,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
     },
@@ -219,51 +296,71 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: '#000',
         backgroundColor: '#fff',
-        fontSize: 8,
+        fontSize: 7,
         fontWeight: 'bold',
+        alignItems: 'stretch',
     },
     tableRow: {
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderColor: '#000',
-        fontSize: 8,
-        minHeight: 15,
+        fontSize: 7,
+        alignItems: 'stretch',
     },
     tableRowTotal: {
         flexDirection: 'row',
         borderBottomWidth: 0,
         borderColor: '#000',
-        fontSize: 8,
-        minHeight: 15,
+        fontSize: 7,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
+        alignItems: 'stretch',
     },
     tableCell: {
         padding: 2,
+        paddingVertical: 2,
         textAlign: 'left',
         borderRightWidth: 1,
         borderRightColor: '#000',
         borderStyle: 'solid',
+        display: 'flex',
+        alignItems: 'center',
+        fontSize: 7,
     },
     tableCellCenter: {
         padding: 2,
+        paddingVertical: 2,
         textAlign: 'center',
         borderRightWidth: 1,
         borderRightColor: '#000',
         borderStyle: 'solid',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 7,
     },
     tableCellRight: {
         padding: 2,
+        paddingVertical: 2,
         textAlign: 'right',
         borderRightWidth: 1,
         borderRightColor: '#000',
         borderStyle: 'solid',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        fontSize: 7,
     },
     tableCellLast: {
         padding: 2,
+        paddingVertical: 2,
         textAlign: 'right',
         borderRightWidth: 0,
         borderStyle: 'solid',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        fontSize: 7,
     },
     bankAndTotalRow: {
         flexDirection: 'row',
@@ -288,30 +385,30 @@ const styles = StyleSheet.create({
     summaryRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingVertical: 2,
+        paddingVertical: 1,
         paddingHorizontal: 6,
     },
     summaryLabel: {
-        fontSize: 8,
+        fontSize: 7,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
     },
     summaryValue: {
-        fontSize: 8,
+        fontSize: 7,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
         textAlign: 'right',
     },
     summaryTotal: {
-        fontSize: 9,
+        fontSize: 8,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
     },
     bankTitle: {
-        fontSize: 10,
+        fontSize: 9,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
-        marginBottom: 4,
+        marginBottom: 3,
         textAlign: 'left',
         borderBottomWidth: 1,
         borderColor: '#000',
@@ -319,8 +416,19 @@ const styles = StyleSheet.create({
         marginLeft: -3,
         marginRight: -3,
     },
-    bankText: {
+    amountInWords: {
         fontSize: 8,
+        fontFamily: 'Poppins',
+        fontWeight: 'bold',
+        padding: 6,
+        borderBottomWidth: 1,
+        borderColor: '#000',
+        marginBottom: 3,
+        marginLeft: -3,
+        marginRight: -3,
+    },
+    bankText: {
+        fontSize: 7,
         marginBottom: 0,
         lineHeight: 1.2,
         fontWeight: 'bold',
@@ -329,6 +437,7 @@ const styles = StyleSheet.create({
     termsAndSignatureRow: {
         flexDirection: 'row',
         borderTopWidth: 0,
+        marginTop: -1,
     },
     termsSection: {
         flex: 1,
@@ -350,23 +459,23 @@ const styles = StyleSheet.create({
     certificationText: {
         fontSize: 6,
         textAlign: 'center',
-        marginBottom: 3,
+        marginBottom: 2,
         paddingHorizontal: 5,
     },
     companyNameText: {
-        fontSize: 8,
+        fontSize: 7,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 5,
+        marginBottom: 3,
         fontFamily: 'Poppins',
     },
     signatureSpace: {
-        height: 40,
+        height: 30,
         width: 150,
         marginBottom: 2,
     },
     signatureBox: {
-        fontSize: 9,
+        fontSize: 8,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
         textAlign: 'center',
@@ -376,10 +485,10 @@ const styles = StyleSheet.create({
         paddingTop: 2,
     },
     addressTitle: {
-        fontSize: 11,
+        fontSize: 10,
         fontFamily: 'Poppins',
         fontWeight: 'bold',
-        marginBottom: 4,
+        marginBottom: 3,
         textAlign: 'center',
         textTransform: 'uppercase',
         borderBottomWidth: 1,
@@ -390,25 +499,25 @@ const styles = StyleSheet.create({
     },
     footer: {
         position: 'absolute',
-        bottom: 20,
-        left: 20,
-        right: 20,
+        bottom: 15,
+        left: 15,
+        right: 15,
         fontSize: 7,
         textAlign: 'center',
     },
     gstinSection: {
         borderWidth: 1,
         borderColor: '#000',
-        padding: 5,
+        padding: 4,
         flexDirection: 'row',
         alignItems: 'center',
         borderTopWidth: 0,
     },
     gstinLabel: {
-        fontSize: 10,
+        fontSize: 9,
     },
     gstinValue: {
-        fontSize: 10,
+        fontSize: 9,
         fontFamily: 'Poppins',
         fontWeight: 'bold',
     },
@@ -474,6 +583,37 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                 {/* Main Content */}
                 <View style={styles.mainContent}>
                     <View style={styles.customerSection}>
+                        <View style={styles.invoiceDetails}>
+                            <Text style={styles.sectionTitle}>TAX INVOICE</Text>
+                            <View style={styles.detailsContainer}>
+                                <View style={styles.detailsColumn}>
+                                    <Text style={styles.detailLabel}>Invoice No:</Text>
+                                    <Text style={styles.detailValue}>{invoiceData.invoiceNumber}</Text>
+
+                                    <Text style={styles.detailLabel}>Challan No:</Text>
+                                    <Text style={styles.detailValue}>{invoiceData.challanNo || '-'}</Text>
+
+                                    <Text style={styles.detailLabel}>DELIVERY DATE:</Text>
+                                    <Text style={styles.detailValue}>{invoiceData.invoiceDate}</Text>
+
+                                    <Text style={styles.detailLabel}>P.O. No:</Text>
+                                    <Text style={styles.detailValue}>{invoiceData.poNo || '-'}</Text>
+                                </View>
+                                <View style={styles.detailsColumnLast}>
+                                    <Text style={styles.detailLabel}>Invoice Date:</Text>
+                                    <Text style={styles.detailValue}>{invoiceData.invoiceDate}</Text>
+
+                                    <Text style={styles.detailLabel}>Challan Date:</Text>
+                                    <Text style={styles.detailValue}>{invoiceData.challanDate || '-'}</Text>
+
+                                    <Text style={styles.detailLabel}>Reverse Charge:</Text>
+                                    <Text style={styles.detailValue}>No</Text>
+
+                                    <Text style={styles.detailLabel}>E-Way No:</Text>
+                                    <Text style={styles.detailValue}>{invoiceData.eWayNo || '-'}</Text>
+                                </View>
+                            </View>
+                        </View>
                         <View style={styles.billTo}>
                             <Text style={styles.addressTitle}>Bill To</Text>
 
@@ -521,74 +661,56 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                                 <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerShipTo.gstNumber || '-'}</Text>
                             </View>
                         </View>
-                        <View style={styles.invoiceDetails}>
-                            <Text style={styles.sectionTitle}>TAX INVOICE</Text>
-                            <View style={{ flexDirection: 'row' }}>
-                                <View style={{ flex: 1, padding: 2, borderRightWidth: 1, borderColor: '#000' }}>
-                                    <Text style={styles.detailLabel}>Invoice No:</Text>
-                                    <Text style={styles.detailValue}>{invoiceData.invoiceNumber}</Text>
-
-                                    <Text style={styles.detailLabel}>Challan No:</Text>
-                                    <Text style={styles.detailValue}>{invoiceData.challanNo || '-'}</Text>
-
-                                    <Text style={styles.detailLabel}>DELIVERY DATE:</Text>
-                                    <Text style={styles.detailValue}>{invoiceData.invoiceDate}</Text>
-
-                                    <Text style={styles.detailLabel}>P.O. No:</Text>
-                                    <Text style={styles.detailValue}>{invoiceData.poNo || '-'}</Text>
-                                </View>
-                                <View style={{ flex: 1, padding: 2, paddingLeft: 4 }}>
-                                    <Text style={styles.detailLabel}>Invoice Date:</Text>
-                                    <Text style={styles.detailValue}>{invoiceData.invoiceDate}</Text>
-
-                                    <Text style={styles.detailLabel}>Challan Date:</Text>
-                                    <Text style={styles.detailValue}>{invoiceData.challanDate || '-'}</Text>
-
-                                    <Text style={styles.detailLabel}>Reverse Charge:</Text>
-                                    <Text style={styles.detailValue}>No</Text>
-
-                                    <Text style={styles.detailLabel}>E-Way No:</Text>
-                                    <Text style={styles.detailValue}>{invoiceData.eWayNo || '-'}</Text>
-                                </View>
-                            </View>
-                        </View>
                     </View>
 
                     {/* Table */}
                     <View style={styles.table}>
                         <View style={styles.tableHeader}>
-                            <Text style={[styles.tableCell, { flex: 0.5 }]}>Sr. No.</Text>
-                            <Text style={[styles.tableCell, { flex: 2 }]}>Name of Product / Service</Text>
-                            <Text style={[styles.tableCell, { flex: 1 }]}>HSN / SAC</Text>
-                            <Text style={[styles.tableCellCenter, { flex: 0.5 }]}>Qty</Text>
-                            <Text style={[styles.tableCellRight, { flex: 1 }]}>Rate</Text>
-                            <Text style={[styles.tableCellRight, { flex: 1 }]}>Taxable Value</Text>
-                            <Text style={[styles.tableCellCenter, { flex: 0.5 }]}>IGST %</Text>
-                            <Text style={[styles.tableCellRight, { flex: 1 }]}>Tax Amount</Text>
-                            <Text style={[styles.tableCellLast, { flex: 1 }]}>Total Amount</Text>
+                            <Text style={[styles.tableCell, { flex: 0.4, fontWeight: 'bold' }]}>Sr. No.</Text>
+                            <Text style={[styles.tableCell, { flex: 2.2, fontWeight: 'bold' }]}>Name of Product / Service</Text>
+                            <Text style={[styles.tableCell, { flex: 0.8, fontWeight: 'bold' }]}>HSN / SAC</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.4, fontWeight: 'bold' }]}>Qty</Text>
+                            {invoiceData.showSqFeet && (
+                                <Text style={[styles.tableCellCenter, { flex: 0.6, fontWeight: 'bold' }]}>Sq.Feet</Text>
+                            )}
+                            <Text style={[styles.tableCellRight, { flex: 0.8, fontWeight: 'bold' }]}>Rate</Text>
+                            <Text style={[styles.tableCellRight, { flex: 1, fontWeight: 'bold' }]}>Taxable Value</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.4, fontWeight: 'bold' }]}>IGST %</Text>
+                            <Text style={[styles.tableCellRight, { flex: 0.8, fontWeight: 'bold' }]}>Tax Amount</Text>
+                            <Text style={[styles.tableCellLast, { flex: 1, fontWeight: 'bold' }]}>Total Amount</Text>
                         </View>
                         {invoiceData.items.map((item, index) => (
                             <View style={styles.tableRow} key={item.id}>
-                                <Text style={[styles.tableCell, { flex: 0.5 }]}>{index + 1}</Text>
-                                <Text style={[styles.tableCell, { flex: 2, fontWeight: 'bold' }]}>{item.name}</Text>
-                                <Text style={[styles.tableCell, { flex: 1 }]}>{item.hsnCode}</Text>
-                                <Text style={[styles.tableCellCenter, { flex: 0.5 }]}>{item.quantity}</Text>
-                                <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(item.price)}</Text>
+                                <Text style={[styles.tableCell, { flex: 0.4 }]}>{index + 1}</Text>
+                                <Text style={[styles.tableCell, { flex: 2.2, fontWeight: 'bold' }]}>{item.name}</Text>
+                                <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.hsnCode}</Text>
+                                <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>
+                                    {item.quantity}{invoiceData.showPcsInQty ? " Pcs" : ""}
+                                </Text>
+                                {invoiceData.showSqFeet && (
+                                    <Text style={[styles.tableCellCenter, { flex: 0.6 }]}>
+                                        {item.sqFeet && item.sqFeet > 0 ? item.sqFeet.toFixed(2) : "-"}
+                                    </Text>
+                                )}
+                                <Text style={[styles.tableCellRight, { flex: 0.8 }]}>{formatCurrency(item.price)}</Text>
                                 <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(item.price * item.quantity)}</Text>
-                                <Text style={[styles.tableCellCenter, { flex: 0.5 }]}>{invoiceData.gstRate || 0}%</Text>
-                                <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency((item.price * item.quantity) * ((invoiceData.gstRate || 0) / 100))}</Text>
+                                <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>{invoiceData.gstRate || 0}%</Text>
+                                <Text style={[styles.tableCellRight, { flex: 0.8 }]}>{formatCurrency((item.price * item.quantity) * ((invoiceData.gstRate || 0) / 100))}</Text>
                                 <Text style={[styles.tableCellLast, { flex: 1 }]}>{formatCurrency((item.price * item.quantity) * (1 + (invoiceData.gstRate || 0) / 100))}</Text>
                             </View>
                         ))}
                         <View style={styles.tableRowTotal}>
-                            <Text style={[styles.tableCell, { flex: 0.5 }]}>Total</Text>
-                            <Text style={[styles.tableCell, { flex: 2 }]}></Text>
-                            <Text style={[styles.tableCell, { flex: 1 }]}></Text>
-                            <Text style={[styles.tableCellCenter, { flex: 0.5 }]}>{calculateTotals(invoiceData.items).quantity}</Text>
-                            <Text style={[styles.tableCellRight, { flex: 1 }]}></Text>
+                            <Text style={[styles.tableCell, { flex: 0.4 }]}>Total</Text>
+                            <Text style={[styles.tableCell, { flex: 2.2 }]}></Text>
+                            <Text style={[styles.tableCell, { flex: 0.8 }]}></Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>{calculateTotals(invoiceData.items).quantity}</Text>
+                            {invoiceData.showSqFeet && (
+                                <Text style={[styles.tableCellCenter, { flex: 0.6 }]}></Text>
+                            )}
+                            <Text style={[styles.tableCellRight, { flex: 0.8 }]}></Text>
                             <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(calculateTotals(invoiceData.items).taxableValue)}</Text>
-                            <Text style={[styles.tableCellCenter, { flex: 0.5 }]}></Text>
-                            <Text style={[styles.tableCellRight, { flex: 1 }]}>{formatCurrency(invoiceData.gstAmount)}</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.4 }]}></Text>
+                            <Text style={[styles.tableCellRight, { flex: 0.8 }]}>{formatCurrency(invoiceData.gstAmount)}</Text>
                             <Text style={[styles.tableCellLast, { flex: 1 }]}>{formatCurrency(invoiceData.total)}</Text>
                         </View>
                     </View>
@@ -597,7 +719,10 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                 {/* Bank Details and Total Summary */}
                 <View style={styles.bankAndTotalRow}>
                     <View style={styles.bankDetails}>
-                        <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Bank Details</Text>
+                        <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Total Amount in Words</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }, { paddingVertical: 4 }]}>{numberToWords(invoiceData.total)}</Text>
+
+                        <Text style={[styles.bankTitle, { borderTopWidth: 1, borderColor: '#000', paddingTop: 4 }, { paddingLeft: 6 }]}>Bank Details</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Name: State Bank of India</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>Branch Name: RAF CAMP</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Account Number: 20000000452</Text>

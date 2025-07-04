@@ -63,6 +63,7 @@ export interface InvoiceData {
     transportationAndOthers: number;
     packaging: number;
     template: string;
+    showPcsInQty: boolean;
 }
 
 export interface Invoice {
@@ -108,6 +109,7 @@ export interface Invoice {
     total: number;
     qrCode: string;
     template: "modern" | "minimal" | "classic" | "professional";
+    showPcsInQty: boolean;
 }
 
 // Query Keys
@@ -576,4 +578,4 @@ export const useDashboardStats = () => {
         enabled: invoices.length > 0,
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
-}; 
+};

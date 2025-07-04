@@ -55,6 +55,8 @@ function Invoice() {
   const saveInvoiceMutation = useSaveInvoice();
 
   const [open, setOpen] = useState(false);
+  const [showPcsInQty, setShowPcsInQty] = useState(false);
+  const [showSqFeet, setShowSqFeet] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string;
     name: string;
@@ -62,6 +64,7 @@ function Invoice() {
     price: number;
     category: string;
     hsnCode: string;
+    sqFeet?: number;
   }>({
     id: "",
     name: "",
@@ -69,6 +72,7 @@ function Invoice() {
     price: 0,
     category: "",
     hsnCode: "",
+    sqFeet: 0,
   });
   const [gstRate, setGstRate] = useState(18);
   const [invoiceItems, setInvoiceItems] = useState<
@@ -80,6 +84,7 @@ function Invoice() {
       category: string;
       hsnCode: string;
       categoryId: string;
+      sqFeet?: number;
     }[]
   >([]);
   const [invoiceNumber, setInvoiceNumber] = useState("");
@@ -121,7 +126,7 @@ function Invoice() {
   const [poNo, setPoNo] = useState("");
   const [eWayNo, setEWayNo] = useState("");
   const [challanDate, setChallanDate] = useState("");
-  const [formErrors, setFormErrors] = useState<{challanNo?: string, poNo?: string, eWayNo?: string}>({});
+  const [formErrors, setFormErrors] = useState<{ challanNo?: string, poNo?: string, eWayNo?: string }>({});
 
   // Set invoice number when fetched
   useEffect(() => {
@@ -225,6 +230,7 @@ function Invoice() {
       category,
       hsnCode: selectedProduct.hsnCode,
       categoryId: inventoryItem.categoryId,
+      sqFeet: showSqFeet ? Number(selectedProduct.sqFeet) : undefined,
     };
 
     console.log("Adding product:", JSON.stringify(newProduct, null, 2));
@@ -267,7 +273,7 @@ function Invoice() {
   };
 
   const validateFields = () => {
-    const errors: {challanNo?: string, poNo?: string, eWayNo?: string} = {};
+    const errors: { challanNo?: string, poNo?: string, eWayNo?: string } = {};
     if (challanNo && !/^\d+$/.test(challanNo)) {
       errors.challanNo = "Challan No. must be a number";
     }
@@ -296,7 +302,7 @@ function Invoice() {
     }
     try {
       console.log("Saving invoice with data:", JSON.stringify(invoiceData, null, 2));
-      console.log("after",invoiceData.gstAmount)
+      console.log("after", invoiceData.gstAmount)
       await saveInvoiceMutation.mutateAsync(invoiceData);
       navigate("/billing");
     } catch (error) {
@@ -308,7 +314,7 @@ function Invoice() {
   // Calculate invoice summary for preview and template
   const subtotal = invoiceItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const gstAmount = subtotal * (gstRate / 100);
-  console.log("Before gstAmount",gstAmount)
+  console.log("Before gstAmount", gstAmount)
   const total = subtotal + gstAmount;
 
   const invoiceData = {
@@ -332,8 +338,10 @@ function Invoice() {
     transportationAndOthers: transportationValue,
     packaging: packagingValue,
     template: selectedTemplate,
+    showPcsInQty,
+    showSqFeet,
   };
-  console.log("invoiceData",invoiceData)
+  console.log("invoiceData", invoiceData)
 
   return (
     <div className="container p-4 pt-6 md:p-8">
@@ -576,7 +584,7 @@ function Invoice() {
               <div>
                 <h3 className="text-lg font-semibold mb-4 flex flex-col gap-4">Invoice Details</h3>
                 <div className="flex flex-col gap-4">
-                  <div className="flex flex-col sm:flex-row gap-4    ">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <div className="min-w-0 flex-2">
                       <Label className="mb-2"># Invoice Number</Label>
                       <Input
@@ -686,9 +694,37 @@ function Invoice() {
         </Card>
         <Card className="flex-2 min-w-0 w-full lg:w-1/2">
           <CardHeader className="flex flex-col sm:flex-row gap-2 justify-between">
-            <CardTitle className="text-2xl font-semibold">
-              Product Details
-            </CardTitle>
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-2xl font-semibold">
+                Product Details
+              </CardTitle>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="showPcsInQty"
+                    checked={showPcsInQty}
+                    onChange={(e) => setShowPcsInQty(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <Label htmlFor="showPcsInQty" className="text-sm font-medium">
+                    Show "Pcs" in Quantity Column
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="showSqFeet"
+                    checked={showSqFeet}
+                    onChange={(e) => setShowSqFeet(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <Label htmlFor="showSqFeet" className="text-sm font-medium">
+                    Enable Sq.Feet
+                  </Label>
+                </div>
+              </div>
+            </div>
             <Button onClick={handleAddProduct} className="w-full sm:w-32 py-4">
               Add
             </Button>
@@ -804,6 +840,24 @@ function Invoice() {
                     </Button>
                   </div>
                 </div>
+                {showSqFeet && (
+                  <div className="w-full sm:w-auto min-w-0">
+                    <h2 className="font-semibold mb-2">Sq.Feet</h2>
+                    <Input
+                      className="w-24 h-9"
+                      value={selectedProduct.sqFeet || 0}
+                      onChange={(e) =>
+                        setSelectedProduct({
+                          ...selectedProduct,
+                          sqFeet: Number(e.target.value) || 0,
+                        })
+                      }
+                      type="number"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                )}
                 <div className="w-full sm:w-auto min-w-0">
                   <Label className="text-[17px] mb-2">Price</Label>
                   <Input
@@ -827,6 +881,7 @@ function Invoice() {
                       <TableHead className="p-6">Name</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Quantity</TableHead>
+                      {showSqFeet && <TableHead>Sq.Feet</TableHead>}
                       <TableHead>Price</TableHead>
                       <TableHead>Item Price</TableHead>
                       <TableHead>Action</TableHead>
@@ -844,8 +899,13 @@ function Invoice() {
                           </span>
                         </TableCell>
                         <TableCell className="text-[16px]">
-                          {product.quantity}
+                          {product.quantity}{showPcsInQty ? " Pcs" : ""}
                         </TableCell>
+                        {showSqFeet && (
+                          <TableCell className="text-[16px]">
+                            {product.sqFeet?.toFixed(2) || "0.00"}
+                          </TableCell>
+                        )}
                         <TableCell className="text-start text-[16px]">
                           ₹{product.price * product.quantity}
                         </TableCell>

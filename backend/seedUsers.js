@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const User = require("./models/user");
 require("dotenv").config();
 
-const mongoURL = process.env.MONGOURL_VARUN;
+const mongoURL = process.env.MONGOURL;
 const seedUsers = async () => {
   try {
     console.log(mongoURL)
@@ -14,8 +14,8 @@ const seedUsers = async () => {
     // Hardcoded users
     const users = [
       {
-        username: "Varun",
-        email: "kalevarun54@gmail.com",
+        username: "admin",
+        email: "admin@gmail.com",
         password: await bcrypt.hash("admin123", 10),
         role: "admin",
       },
