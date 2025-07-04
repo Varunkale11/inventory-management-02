@@ -90,7 +90,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://invoice.degroop.com",
-      "https://inventory-management-alpha-taupe.vercel.app",
+      "https://invoice31.vercel.app/",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"],
     credentials: true,

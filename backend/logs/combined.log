@@ -1295,3 +1295,4 @@
 {"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mSetting refresh token cookie\u001b[39m","meta":{"deviceInfo":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 - ::1","sameSite":"none","secure":true},"timestamp":"2025-07-04 18:05:06:56"}
 {"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mSuccessful login\u001b[39m","meta":{"email":"admin@gmail.com","ip":"::1","userId":"6866ae7519be4c70a300dfa9"},"timestamp":"2025-07-04 18:21:52:2152"}
 {"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mSetting refresh token cookie\u001b[39m","meta":{"deviceInfo":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 - ::1","sameSite":"none","secure":true},"timestamp":"2025-07-04 18:21:52:2152"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mReceived SIGINT. Graceful shutdown initiated.\u001b[39m","meta":{},"timestamp":"2025-07-04 19:02:59:259"}
