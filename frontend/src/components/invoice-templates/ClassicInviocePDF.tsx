@@ -139,10 +139,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         color: '#000',
     },
-
-
-
-
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -208,27 +204,26 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderColor: '#000',
-        minHeight: 90,
+        minHeight: 120,
     },
     billTo: {
         flex: 1,
         padding: 6,
         borderLeftWidth: 1,
         borderColor: '#000',
-        minHeight: 90,
+        minHeight: 100,
     },
     shipTo: {
         flex: 1,
         padding: 6,
         borderLeftWidth: 1,
         borderColor: '#000',
-        minHeight: 90,
+        minHeight: 100,
     },
     invoiceDetails: {
         flex: 2,
         padding: 6,
         minHeight: 100,
-        maxHeight: 200,
     },
     detailsContainer: {
         flexDirection: 'row',
@@ -313,38 +308,38 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderColor: '#000',
-        minHeight: 16,
+        minHeight: 14,
     },
     tableRowTotal: {
         flexDirection: 'row',
         borderBottomWidth: 0,
         borderColor: '#000',
         fontWeight: 'bold',
-        minHeight: 16,
+        minHeight: 14,
     },
     tableCell: {
-        padding: 4,
+        padding: 2,
         textAlign: 'left',
         borderRightWidth: 1,
         borderRightColor: '#000',
         fontSize: 7,
     },
     tableCellCenter: {
-        padding: 4,
+        padding: 2,
         textAlign: 'center',
         borderRightWidth: 1,
         borderRightColor: '#000',
         fontSize: 7,
     },
     tableCellRight: {
-        padding: 4,
+        padding: 2,
         textAlign: 'right',
         borderRightWidth: 1,
         borderRightColor: '#000',
         fontSize: 7,
     },
     tableCellLast: {
-        padding: 4,
+        padding: 2,
         textAlign: 'right',
         fontSize: 7,
     },
@@ -639,7 +634,7 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
 
                         <View style={styles.shipTo}>
                             <Text style={styles.addressTitle}>Ship To</Text>
-                            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+                            <View style={{ flex: 1, justifyContent: 'space-between'}}>
                                 <View style={styles.addressRow}>
                                     <Text style={styles.addressLabel}>Name:</Text>
                                     <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerShipTo.name}</Text>
