@@ -115,12 +115,12 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({
               >
                 <Card
                   className={`h-72 w-72 cursor-pointer transition-all overflow-hidden group relative ${selectedTemplate === template.id
-                    ? "border-4 border-blue-300 shadow-lg"
+                    ? "border-4 border-blue-300 shadow-lg "
                     : "hover:border-primary/50 hover:shadow-md"
                     }`}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
-                    <img src={template.preview} className="object-contain w-full h-full" />
+                  <div className="absolute inset-0 bg-stone-900 flex items-center justify-center ">
+                    <img src={template.preview} className="object-fill w-full h-full " />
                   </div>
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
                   {selectedTemplate === template.id && (
