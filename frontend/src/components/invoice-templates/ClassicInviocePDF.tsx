@@ -227,14 +227,13 @@ const styles = StyleSheet.create({
     invoiceDetails: {
         flex: 2,
         padding: 6,
-
         minHeight: 100,
         maxHeight: 200,
     },
     detailsContainer: {
         flexDirection: 'row',
         flex: 1,
-        gap: 6,
+        gap: 2,
         marginTop: 2,
         height: '100%',
     },
@@ -247,8 +246,8 @@ const styles = StyleSheet.create({
     detailsColumnLast: {
         height: '100%',
         flex: 1,
-        padding: 4,
-        justifyContent: 'space-between',
+        // padding: 4,
+        // justifyContent: 'space-between',
     },
     sectionTitle: {
         fontSize: 10,
@@ -273,7 +272,7 @@ const styles = StyleSheet.create({
         fontSize: 7,
         color: '#222',
         marginBottom: 1,
-        flex: 1,
+        flex: 2,
     },
     detailValue: {
         fontSize: 8,
@@ -390,10 +389,10 @@ const styles = StyleSheet.create({
     bankTitle: {
         fontSize: 9,
         fontWeight: 'bold',
-        marginBottom: 4,
-        borderBottomWidth: 1,
+        // marginBottom: 4,
+        // borderBottomWidth: 1,
         borderColor: '#000',
-        paddingBottom: 2,
+        // paddingBottom: 2,
         marginLeft: -8,
         marginRight: -8,
         paddingLeft: 8,
@@ -479,7 +478,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         position: 'absolute',
-        bottom: 20,
+        bottom: 10,
         left: 20,
         right: 20,
         fontSize: 7,
@@ -603,7 +602,7 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
 
                                     <View style={styles.detailRow}>
                                         <Text style={styles.detailLabel}>Reverse Charge:</Text>
-                                        <Text style={styles.detailValue}>No</Text>
+                                        <Text style={styles.detailValue}>N.A.</Text>
                                     </View>
 
                                     <View style={styles.detailRow}>
@@ -770,10 +769,11 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                 <View style={styles.termsAndSignatureRow}>
                     <View style={styles.termsSection}>
                         <Text style={styles.bankTitle}>Terms and Conditions</Text>
-                        <Text style={styles.bankText}>1. Subject to Ahmedabad Jurisdiction.</Text>
-                        <Text style={styles.bankText}>2. Our responsibility ceases as soon as the goods leave our premises.</Text>
-                        <Text style={styles.bankText}>3. Goods once sold will not be taken back.</Text>
-                        <Text style={styles.bankText}>4. Delivery ex-premises.</Text>
+                        <Text style={styles.bankText}>1. Subject to Pune Jurisdiction</Text>
+                        <Text style={styles.bankText}>2. Invoice shows actual price of goods; all particulars true and correct</Text>
+                        <Text style={styles.bankText}>3. 21% interest charged if payment not made by due date</Text>
+                        <Text style={styles.bankText}>4. Responsibility ceases after goods leave our premises</Text>
+                        <Text style={styles.bankText}>5. No returns or exchanges for sold goods</Text>
                     </View>
 
                     <View style={styles.signatureSection}>

@@ -785,11 +785,12 @@ const MinimalInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                 {/* Terms and Conditions */}
                 <View style={styles.termsAndSignatureRow}>
                     <View style={styles.termsSection}>
-                        <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Terms and Conditions</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>1. Subject to Ahmedabad Jurisdiction.</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>2. Our responsibility ceases as soon as the goods leave our premises.</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>3. Goods once sold will not be taken back.</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>4. Delivery ex-premises.</Text>
+                        <Text style={styles.bankTitle}>Terms and Conditions</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>1. Subject to Pune Jurisdiction</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>2. Invoice shows actual price of goods; all particulars true and correct</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>3. 21% interest charged if payment not made by due date</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>4. Responsibility ceases after goods leave our premises.</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>5. No returns or exchanges for sold goods</Text>
                     </View>
 
                     <View style={styles.signatureSection}>

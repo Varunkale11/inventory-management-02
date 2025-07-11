@@ -380,10 +380,11 @@ const PremiumMinimalInvoice: React.FC<{ invoiceData: InvoiceData }> = ({ invoice
       <div className="col-span-3 border border-black text-black border-t-0 p-3">
         <div className="font-bold text-sm border-b border-black pb-2 mb-3 pl-6">Terms and Conditions</div>
         <div className="space-y-1 pl-6">
-          <div className="text-xs font-bold">1. Subject to Ahmedabad Jurisdiction.</div>
-          <div className="text-xs font-bold">2. Our responsibility ceases as soon as the goods leave our premises.</div>
-          <div className="text-xs font-bold">3. Goods once sold will not be taken back.</div>
-          <div className="text-xs font-bold">4. Delivery ex-premises.</div>
+          <div className="text-xs font-bold">1. Subject to Pune Jurisdiction</div>
+          <div className="text-xs font-bold">2. Invoice shows actual price of goods; all particulars true and correct</div>
+          <div className="text-xs font-bold">3. 21% interest charged if payment not made by due date</div>
+          <div className="text-xs font-bold">4. Responsibility ceases after goods leave our premises</div>
+          <div className="text-xs font-bold">5. No returns or exchanges for sold goods</div>
         </div>
       </div>
       <div className="border border-black text-black border-t-0 p-3 flex flex-col items-center">
@@ -396,7 +397,7 @@ const PremiumMinimalInvoice: React.FC<{ invoiceData: InvoiceData }> = ({ invoice
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-neutral-900 rounded-lg py-8 px-4">
       {/* Action Buttons */}
       {!url.includes('billing') ? '' : (
         <div className="max-w-4xl mx-auto mb-4 flex gap-4">

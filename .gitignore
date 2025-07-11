@@ -1,3 +1,5 @@
 node_modules
 .env
 .README_*.md
+AUTH_FLOW.md
+PROJECT_OVERVIEW.md

@@ -110,12 +110,12 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({
             return (
               <div
                 key={template.id}
-                className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-1 sm:px-2 lg:px-2"
+                className="w-full sm:w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/5 flex-shrink-0 px-1 sm:px-2 lg:px-2"
                 onClick={() => onSelectTemplate(template.id)}
               >
                 <Card
-                  className={`h-72 cursor-pointer transition-all overflow-hidden group relative ${selectedTemplate === template.id
-                    ? "border-2 border-primary shadow-lg"
+                  className={`h-72 w-72 cursor-pointer transition-all overflow-hidden group relative ${selectedTemplate === template.id
+                    ? "border-4 border-blue-300 shadow-lg"
                     : "hover:border-primary/50 hover:shadow-md"
                     }`}
                 >
@@ -130,7 +130,7 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({
                 <div className="mt-2 flex items-center justify-between">
                   <h4 className="text-sm font-medium">{template.name}</h4>
                   {selectedTemplate === template.id && (
-                    <span className="text-xs text-primary font-medium">
+                    <span className="text-xs text-blue-300 font-medium">
                       Selected
                     </span>
                   )}

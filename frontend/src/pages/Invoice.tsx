@@ -166,17 +166,18 @@ function Invoice() {
 
   const templates = [
     {
-      id: "professional",
-      name: "Professional Template",
-      preview: "/templates/professional.png",
-      component: ProfessionalInvoiceTemplate,
-    },
-    {
       id: "modern",
       name: "Modern Template",
       preview: "/templates/modern.png",
       component: ModernInvoiceTemplate,
     },
+    {
+      id: "professional",
+      name: "Professional Template",
+      preview: "/templates/professional.png",
+      component: ProfessionalInvoiceTemplate,
+    },
+
     {
       id: "classic",
       name: "Classic Template",
@@ -344,7 +345,7 @@ function Invoice() {
   console.log("invoiceData", invoiceData)
 
   return (
-    <div className="container p-4 pt-6 md:p-8">
+    <div className="container p-4 pt-6 md:p-8 ">
       <h1 className="text-3xl mb-8 font-serif font-bold tracking-tight">Create Invoice</h1>
       <div className="flex flex-col lg:flex-row flex-wrap gap-4 min-w-0">
         <Card className="flex-1 min-w-0 w-full lg:w-1/2">
@@ -942,7 +943,7 @@ function Invoice() {
         </CardContent>
       </Card>
 
-      <div className="container relative mt-8 w-full overflow-x-auto">
+      <div className="container relative mt-8 w-full overflow-x-auto ">
         {/* @ts-ignore */}
         <SelectedTemplate invoiceData={invoiceData} />
       </div>

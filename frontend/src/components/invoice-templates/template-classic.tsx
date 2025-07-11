@@ -353,10 +353,11 @@ const InvoiceClassic: React.FC<{ invoiceData: InvoiceData }> = ({ invoiceData })
       <div className="border border-black p-4 mb-4 text-black">
         <h3 className="text-xs font-bold mb-2">Terms and Conditions</h3>
         <div className="text-xs space-y-1">
-          <p>1. Subject to Ahmedabad Jurisdiction.</p>
-          <p>2. Our responsibility ceases as soon as the goods leave our premises.</p>
-          <p>3. Goods once sold will not be taken back.</p>
-          <p>4. Delivery ex-premises.</p>
+          <p>1. Subject to Pune Jurisdiction</p>
+          <p>2. Invoice shows actual price of goods; all particulars true and correct</p>
+          <p>3. 21% interest charged if payment not made by due date</p>
+          <p>4. Responsibility ceases after goods leave our premises</p>
+          <p>5. No returns or exchanges for sold goods</p>
         </div>
       </div>
 
@@ -373,7 +374,7 @@ const InvoiceClassic: React.FC<{ invoiceData: InvoiceData }> = ({ invoiceData })
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-neutral-900 rounded-lg py-8 px-4">
       {/* Action Buttons */}
       {!url.includes('billing') ? '' : (
         <div className="max-w-4xl mx-auto mb-4 flex gap-4">

@@ -577,7 +577,7 @@ const ProfessionalInvoicePDF: React.FC<{ invoiceData: InvoiceData | null; qrCode
                 {/* GSTIN Section */}
                 <View style={styles.gstinSection}>
                     <Text style={styles.gstinLabel}>GSTIN: </Text>
-                    <Text style={styles.gstinValue}>{invoiceData.companyDetails.gstin}</Text>
+                    <Text style={styles.gstinValue}> 24HDE7487RE5RT4</Text>
                 </View>
 
                 {/* Main Content */}
