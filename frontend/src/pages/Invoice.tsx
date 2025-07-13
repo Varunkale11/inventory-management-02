@@ -316,7 +316,7 @@ function Invoice() {
   const subtotal = invoiceItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const gstAmount = subtotal * (gstRate / 100);
   console.log("Before gstAmount", gstAmount)
-  const total = subtotal + gstAmount;
+  const total = subtotal + gstAmount + transportationValue + packagingValue;
 
   const invoiceData = {
     gstRate,

@@ -207,73 +207,76 @@ const styles = StyleSheet.create({
         minHeight: 120,
     },
     billTo: {
-        flex: 1,
+        flex: 1.3,
         padding: 6,
         borderLeftWidth: 1,
         borderColor: '#000',
-        minHeight: 100,
+        minHeight: 120,
     },
     shipTo: {
-        flex: 1,
+        flex: 1.3,
         padding: 6,
         borderLeftWidth: 1,
         borderColor: '#000',
-        minHeight: 100,
+        minHeight: 120,
     },
     invoiceDetails: {
-        flex: 2,
-        padding: 6,
-        minHeight: 100,
+        flex: 1.4,
+        padding: 3,
+        minHeight: 120,
     },
     detailsContainer: {
         flexDirection: 'row',
         flex: 1,
-        gap: 2,
-        marginTop: 2,
         height: '100%',
     },
     detailsColumn: {
-        height: '100%',
+        height: '104%',
         flex: 1,
-        // padding: 3,
-        justifyContent: 'space-between',
+        padding: 2,
+        borderRightWidth: 1,
+        borderColor: '#000',
+        // justifyContent: 'space-between',
     },
     detailsColumnLast: {
         height: '100%',
         flex: 1,
+        padding: 2,
+        paddingLeft: 4,
         // padding: 4,
         // justifyContent: 'space-between',
     },
     sectionTitle: {
         fontSize: 10,
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: 0,
         textAlign: 'center',
         borderBottomWidth: 1,
         borderColor: '#000',
         paddingBottom: 2,
-        marginLeft: -6,
+        marginLeft: -4,
         marginRight: -6,
         height: 16,
     },
     detailRow: {
-        flexDirection: 'row',
-        gap: 4,
-        marginBottom: 2,
-        height: 20,
-        alignItems: 'center',
+        flexDirection: 'column', // changed from 'row' to 'column'
+        marginBottom: 4, // increased spacing for vertical layout
+        fontSize: 8,
+        lineHeight: 1.2,
     },
     detailLabel: {
         fontSize: 7,
         color: '#222',
-        marginBottom: 1,
-        flex: 2,
+        marginBottom: 0,
+        // flex: 2,
+        textTransform: 'uppercase', // optional: for clarity
     },
     detailValue: {
         fontSize: 8,
         fontWeight: 'bold',
         marginBottom: 0,
-        flex: 2,
+        flex: undefined, // remove flex for vertical
+        marginTop: 0,
     },
     addressRow: {
         flexDirection: 'row',
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
         fontSize: 7,
         fontWeight: 'bold',
         color: '#222',
-        width: 30,
+        width: 40,
     },
     addressValue: {
         fontSize: 7,
@@ -322,26 +325,26 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         borderRightWidth: 1,
         borderRightColor: '#000',
-        fontSize: 7,
+        fontSize: 8,
     },
     tableCellCenter: {
         padding: 2,
         textAlign: 'center',
         borderRightWidth: 1,
         borderRightColor: '#000',
-        fontSize: 7,
+        fontSize: 8,
     },
     tableCellRight: {
         padding: 2,
         textAlign: 'right',
         borderRightWidth: 1,
         borderRightColor: '#000',
-        fontSize: 7,
+        fontSize: 8,
     },
     tableCellLast: {
         padding: 2,
         textAlign: 'right',
-        fontSize: 7,
+        fontSize: 8,
     },
     bankAndTotalRow: {
         flexDirection: 'row',
@@ -371,12 +374,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 2,
     },
     summaryLabel: {
-        fontSize: 7,
+        fontSize: 8,
         fontWeight: 'bold',
         color: '#222',
     },
     summaryValue: {
-        fontSize: 7,
+        fontSize: 9,
         fontWeight: 'bold',
         textAlign: 'right',
         color: '#222',
@@ -405,7 +408,7 @@ const styles = StyleSheet.create({
         paddingLeft: 8,
     },
     bankText: {
-        fontSize: 7,
+        fontSize: 8,
         marginBottom: 1,
         lineHeight: 1.2,
         paddingLeft: 2,
@@ -461,15 +464,15 @@ const styles = StyleSheet.create({
     addressTitle: {
         fontSize: 8,
         fontWeight: 'bold',
-        marginBottom: 2,
+        marginBottom: 4,
         textAlign: 'center',
         textTransform: 'uppercase',
         borderBottomWidth: 1,
         borderColor: '#000',
         marginLeft: -6,
         marginRight: -6,
-        paddingBottom: 2,
-        height: 16,
+        paddingBottom: 0,
+        height: 13,
     },
     footer: {
         position: 'absolute',
@@ -532,7 +535,6 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                         <View style={styles.companyContentRow}>
                             <View style={styles.contactInfo}>
                                 <Text style={styles.companyDetails}>Tel: {invoiceData.companyDetails.phone}</Text>
-                                <Text style={styles.companyDetails}>Web: www.gfttools.com</Text>
                                 <Text style={styles.companyDetails}>Email: {invoiceData.companyDetails.email}</Text>
                             </View>
                             <View style={styles.addressInfo}>
@@ -609,14 +611,14 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                         </View>
                         <View style={styles.billTo}>
                             <Text style={styles.addressTitle}>Bill To</Text>
-                            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+                            <View style={{ flex: 1 ,gap:2 }}>
                                 <View style={styles.addressRow}>
-                                    <Text style={styles.addressLabel}>Name:</Text>
+                                    <Text style={styles.addressLabel}>NAME:</Text>
                                     <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerBillTo.name}</Text>
                                 </View>
 
                                 <View style={styles.addressRow}>
-                                    <Text style={styles.addressLabel}>Address:</Text>
+                                    <Text style={styles.addressLabel}>ADDRESS:</Text>
                                     <Text style={styles.addressValue}>{invoiceData.customerBillTo.address}</Text>
                                 </View>
 
@@ -634,14 +636,14 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
 
                         <View style={styles.shipTo}>
                             <Text style={styles.addressTitle}>Ship To</Text>
-                            <View style={{ flex: 1, justifyContent: 'space-between'}}>
+                            <View style={{ flex: 1, gap:2 }}>
                                 <View style={styles.addressRow}>
-                                    <Text style={styles.addressLabel}>Name:</Text>
+                                    <Text style={styles.addressLabel}>NAME:</Text>
                                     <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerShipTo.name}</Text>
                                 </View>
 
                                 <View style={styles.addressRow}>
-                                    <Text style={styles.addressLabel}>Address:</Text>
+                                    <Text style={styles.addressLabel}>ADDRESS:</Text>
                                     <Text style={styles.addressValue}>{invoiceData.customerShipTo.address}</Text>
                                 </View>
 
@@ -664,7 +666,7 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                             <Text style={[styles.tableCell, { flex: 0.4, fontWeight: 'bold' }]}>Sr. No.</Text>
                             <Text style={[styles.tableCell, { flex: 2.2, fontWeight: 'bold' }]}>Name of Product / Service</Text>
                             <Text style={[styles.tableCell, { flex: 0.8, fontWeight: 'bold' }]}>HSN / SAC</Text>
-                            <Text style={[styles.tableCellCenter, { flex: 0.4, fontWeight: 'bold' }]}>Qty</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.9, fontWeight: 'bold' }]}>Qty</Text>
                             {invoiceData.showSqFeet && (
                                 <Text style={[styles.tableCellCenter, { flex: 0.6, fontWeight: 'bold' }]}>Sq.Feet</Text>
                             )}
@@ -679,7 +681,7 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                                 <Text style={[styles.tableCell, { flex: 0.4 }]}>{index + 1}</Text>
                                 <Text style={[styles.tableCell, { flex: 2.2, fontWeight: 'bold' }]}>{item.name}</Text>
                                 <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.hsnCode}</Text>
-                                <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>
+                                <Text style={[styles.tableCellCenter, { flex: 0.9 }]}>
                                     {item.quantity}{invoiceData.showPcsInQty ? " Pcs" : ""}
                                 </Text>
                                 {invoiceData.showSqFeet && (
@@ -698,7 +700,7 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                             <Text style={[styles.tableCell, { flex: 0.4 }]}>Total</Text>
                             <Text style={[styles.tableCell, { flex: 2.2 }]}></Text>
                             <Text style={[styles.tableCell, { flex: 0.8 }]}></Text>
-                            <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>{calculateTotals(invoiceData.items).quantity}</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.9 }]}>{calculateTotals(invoiceData.items).quantity}{invoiceData.showPcsInQty ? ' Pcs' : ''}</Text>
                             {invoiceData.showSqFeet && (
                                 <Text style={[styles.tableCellCenter, { flex: 0.6 }]}></Text>
                             )}
@@ -765,7 +767,7 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                     <View style={styles.termsSection}>
                         <Text style={styles.bankTitle}>Terms and Conditions</Text>
                         <Text style={styles.bankText}>1. Subject to Pune Jurisdiction</Text>
-                        <Text style={styles.bankText}>2. Invoice shows actual price of goods; all particulars true and correct</Text>
+                        <Text style={styles.bankText}>2. Invoice shows actual price of goods all particulars true and correct</Text>
                         <Text style={styles.bankText}>3. 21% interest charged if payment not made by due date</Text>
                         <Text style={styles.bankText}>4. Responsibility ceases after goods leave our premises</Text>
                         <Text style={styles.bankText}>5. No returns or exchanges for sold goods</Text>

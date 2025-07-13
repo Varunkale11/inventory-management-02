@@ -200,26 +200,26 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderColor: '#000',
-        minHeight: 140,
+        minHeight: 120,
     },
     billTo: {
-        flex: 1,
+        flex: 1.3,
         padding: 3,
         borderLeftWidth: 1,
         borderColor: '#000',
-        minHeight: 140,
+        minHeight: 120,
     },
     shipTo: {
-        flex: 1,
+        flex: 1.3,
         padding: 3,
         borderLeftWidth: 1,
         borderColor: '#000',
-        minHeight: 140,
+        minHeight: 120,
     },
     invoiceDetails: {
-        flex: 2,
+        flex: 1.4,
         padding: 3,
-        minHeight: 140,
+        minHeight: 120,
     },
     detailsContainer: {
         flexDirection: 'row',
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
         padding: 2,
         borderRightWidth: 1,
         borderColor: '#000',
-        height: '100%',
+        height: '104%',
     },
     detailsColumnLast: {
         flex: 1,
@@ -243,11 +243,11 @@ const styles = StyleSheet.create({
         fontSize: 9,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
-        marginBottom: 3,
+        marginBottom: 0,
         textAlign: 'center',
         borderBottomWidth: 1,
         borderColor: '#000',
-        paddingBottom: 2,
+        paddingBottom: 3,
         marginLeft: -3,
         marginRight: -3,
     },
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         display: 'flex',
         alignItems: 'center',
-        fontSize: 7,
+        fontSize: 8,
     },
     tableCellCenter: {
         padding: 2,
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: 7,
+        fontSize: 8,
     },
     tableCellRight: {
         padding: 2,
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        fontSize: 7,
+        fontSize: 8,
     },
     tableCellLast: {
         padding: 2,
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        fontSize: 7,
+        fontSize: 8,
     },
     bankAndTotalRow: {
         flexDirection: 'row',
@@ -389,12 +389,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 6,
     },
     summaryLabel: {
-        fontSize: 7,
+        fontSize: 8,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
     },
     summaryValue: {
-        fontSize: 7,
+        fontSize: 9,
         fontWeight: 'bold',
         fontFamily: 'Poppins',
         textAlign: 'right',
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
         marginRight: -3,
     },
     bankText: {
-        fontSize: 7,
+        fontSize: 8,
         marginBottom: 0,
         lineHeight: 1.2,
         fontWeight: 'bold',
@@ -555,7 +555,6 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                         <View style={styles.companyContentRow}>
                             <View style={styles.contactInfo}>
                                 <Text style={styles.companyDetails}>Tel: 9820132560, 9637831717</Text>
-                                <Text style={styles.companyDetails}>Web: www.gfttools.com</Text>
                                 <Text style={styles.companyDetails}>Email: info@gfttools.com</Text>
                             </View>
                             <View style={styles.addressInfo}>
@@ -618,12 +617,12 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                             <Text style={styles.addressTitle}>Bill To</Text>
 
                             <View style={styles.addressRow}>
-                                <Text style={styles.addressLabel}>Name:</Text>
+                                <Text style={styles.addressLabel}>NAME:</Text>
                                 <Text style={[styles.addressValue, { fontWeight: 'bold' }]}>{invoiceData.customerBillTo.name}</Text>
                             </View>
 
                             <View style={styles.addressRow}>
-                                <Text style={styles.addressLabel}>Address:</Text>
+                                <Text style={styles.addressLabel}>ADDRESS:</Text>
                                 <Text style={styles.addressValue}>{invoiceData.customerBillTo.address}</Text>
                             </View>
 
@@ -669,7 +668,7 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                             <Text style={[styles.tableCell, { flex: 0.4, fontWeight: 'bold' }]}>Sr. No.</Text>
                             <Text style={[styles.tableCell, { flex: 2.2, fontWeight: 'bold' }]}>Name of Product / Service</Text>
                             <Text style={[styles.tableCell, { flex: 0.8, fontWeight: 'bold' }]}>HSN / SAC</Text>
-                            <Text style={[styles.tableCellCenter, { flex: 0.4, fontWeight: 'bold' }]}>Qty</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.9, fontWeight: 'bold' }]}>Qty</Text>
                             {invoiceData.showSqFeet && (
                                 <Text style={[styles.tableCellCenter, { flex: 0.6, fontWeight: 'bold' }]}>Sq.Feet</Text>
                             )}
@@ -684,7 +683,7 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                                 <Text style={[styles.tableCell, { flex: 0.4 }]}>{index + 1}</Text>
                                 <Text style={[styles.tableCell, { flex: 2.2, fontWeight: 'bold' }]}>{item.name}</Text>
                                 <Text style={[styles.tableCell, { flex: 0.8 }]}>{item.hsnCode}</Text>
-                                <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>
+                                <Text style={[styles.tableCellCenter, { flex: 0.9 }]}>
                                     {item.quantity}{invoiceData.showPcsInQty ? " Pcs" : ""}
                                 </Text>
                                 {invoiceData.showSqFeet && (
@@ -703,7 +702,7 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                             <Text style={[styles.tableCell, { flex: 0.4 }]}>Total</Text>
                             <Text style={[styles.tableCell, { flex: 2.2 }]}></Text>
                             <Text style={[styles.tableCell, { flex: 0.8 }]}></Text>
-                            <Text style={[styles.tableCellCenter, { flex: 0.4 }]}>{calculateTotals(invoiceData.items).quantity}</Text>
+                            <Text style={[styles.tableCellCenter, { flex: 0.9 }]}>{calculateTotals(invoiceData.items).quantity} {invoiceData.showPcsInQty ? ' Pcs' : ''}</Text>
                             {invoiceData.showSqFeet && (
                                 <Text style={[styles.tableCellCenter, { flex: 0.6 }]}></Text>
                             )}
@@ -774,7 +773,7 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                     <View style={styles.termsSection}>
                         <Text style={styles.bankTitle}>Terms and Conditions</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>1. Subject to Pune Jurisdiction</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>2. Invoice shows actual price of goods; all particulars true and correct</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>2. Invoice shows actual price of goods all particulars true and correct</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>3. 21% interest charged if payment not made by due date</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>4. Responsibility ceases after goods leave our premises.</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>5. No returns or exchanges for sold goods</Text>
