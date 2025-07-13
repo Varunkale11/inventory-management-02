@@ -132,6 +132,8 @@ interface InvoiceData {
 const styles = StyleSheet.create({
     page: {
         padding: 15,
+        paddingTop:30,
+        paddingBottom: 50, // Increased to reserve space for footer
         fontSize: 9,
         fontFamily: 'Poppins',
         backgroundColor: '#fff',
@@ -364,7 +366,7 @@ const styles = StyleSheet.create({
     },
     bankAndTotalRow: {
         flexDirection: 'row',
-        borderTopWidth: 0,
+        borderTopWidth: 1,
         marginTop: -6,
     },
     bankDetails: {
@@ -716,8 +718,8 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                 </View>
 
                 {/* Bank Details and Total Summary */}
-                <View style={styles.bankAndTotalRow}>
-                    <View style={styles.bankDetails}>
+                <View style={styles.bankAndTotalRow} wrap={false}>
+                    <View style={styles.bankDetails} wrap={false}>
                         <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Total Amount in Words</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }, { paddingVertical: 4 }]}>{numberToWords(invoiceData.total)}</Text>
 
@@ -728,7 +730,7 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Branch IFSC: SBIN000488</Text>
                     </View>
 
-                    <View style={styles.totalSummary}>
+                    <View style={styles.totalSummary} wrap={false}>
                         <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Amount Summary</Text>
                         <View style={styles.summaryRow}>
                             <Text style={styles.summaryLabel}>Taxable Amount:</Text>
@@ -746,10 +748,6 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                                 <Text style={styles.summaryValue}>{formatCurrency(invoiceData.transportationAndOthers)}</Text>
                             </View>
                         )}
-                        {/* <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>Add: IGST:</Text>
-                            <Text style={styles.summaryValue}>{formatCurrency(invoiceData.gstAmount)}</Text>
-                        </View> */}
                         <View style={styles.summaryRow}>
                             <Text style={styles.summaryLabel}>Total Tax:</Text>
                             <Text style={styles.summaryValue}>{formatCurrency(invoiceData.gstAmount)}</Text>
@@ -769,8 +767,8 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                 </View>
 
                 {/* Terms and Conditions */}
-                <View style={styles.termsAndSignatureRow}>
-                    <View style={styles.termsSection}>
+                <View style={styles.termsAndSignatureRow} wrap={false}>
+                    <View style={styles.termsSection} wrap={false}>
                         <Text style={styles.bankTitle}>Terms and Conditions</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>1. Subject to Pune Jurisdiction</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>2. Invoice shows actual price of goods all particulars true and correct</Text>
@@ -779,7 +777,7 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>5. No returns or exchanges for sold goods</Text>
                     </View>
 
-                    <View style={styles.signatureSection}>
+                    <View style={styles.signatureSection} wrap={false}>
                         <Text style={styles.certificationText}>Certified that the particulars given above are true and correct.</Text>
                         <Text style={styles.companyNameText}>For Dynamic Enterprises</Text>
                         <View style={styles.signatureSpace} />
@@ -788,9 +786,13 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                 </View>
 
                 {/* Footer */}
-                <Text style={styles.footer}>
-                    Invoice No: {invoiceData.invoiceNumber} | Invoice Date: {invoiceData.invoiceDate} | Page 1 of 1
-                </Text>
+                <Text
+                    style={styles.footer}
+                    fixed
+                    render={({ pageNumber, totalPages }) =>
+                        `Invoice No: ${invoiceData.invoiceNumber} | Invoice Date: ${invoiceData.invoiceDate} | Page ${pageNumber} of ${totalPages}`
+                    }
+                />
             </Page>
         </Document>
     );

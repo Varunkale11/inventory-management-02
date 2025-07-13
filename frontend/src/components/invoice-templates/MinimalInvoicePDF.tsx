@@ -132,6 +132,8 @@ interface InvoiceData {
 const styles = StyleSheet.create({
     page: {
         padding: 15,
+        paddingTop:30,
+        paddingBottom: 25, // Ensure space for the footer
         fontSize: 9,
         fontFamily: 'Poppins',
         backgroundColor: '#fff',
@@ -374,7 +376,7 @@ const styles = StyleSheet.create({
     },
     bankAndTotalRow: {
         flexDirection: 'row',
-        borderTopWidth: 0,
+        borderTopWidth: 1,
         marginTop: -6,
     },
     bankDetails: {
@@ -734,7 +736,7 @@ const MinimalInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                 </View>
 
                 {/* Bank Details and Total Summary */}
-                <View style={styles.bankAndTotalRow}>
+                <View style={styles.bankAndTotalRow} wrap={false}>
                     <View style={styles.bankDetails}>
                         <Text style={[styles.bankTitle, { paddingLeft: 6 }]}>Total Amount in Words</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }, { paddingVertical: 4 }]}>{numberToWords(invoiceData.total)}</Text>
@@ -782,7 +784,7 @@ const MinimalInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                 </View>
 
                 {/* Terms and Conditions */}
-                <View style={styles.termsAndSignatureRow}>
+                <View style={styles.termsAndSignatureRow} wrap={false}>
                     <View style={styles.termsSection}>
                         <Text style={styles.bankTitle}>Terms and Conditions</Text>
                         <Text style={[styles.bankText, { paddingLeft: 6 }]}>1. Subject to Pune Jurisdiction</Text>
@@ -801,9 +803,13 @@ const MinimalInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                 </View>
 
                 {/* Footer */}
-                <Text style={styles.footer}>
-                    Invoice No: {invoiceData.invoiceNumber} | Invoice Date: {invoiceData.invoiceDate} | Page 1 of 1
-                </Text>
+                <Text
+                    style={styles.footer}
+                    render={({ pageNumber, totalPages }) =>
+                        `Invoice No: ${invoiceData.invoiceNumber} | Invoice Date: ${invoiceData.invoiceDate} | Page ${pageNumber} of ${totalPages}`
+                    }
+                    fixed
+                />
             </Page>
         </Document>
     );
