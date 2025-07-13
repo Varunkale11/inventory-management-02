@@ -1367,3 +1367,5 @@
 {"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mDatabase connected successfully\u001b[39m","meta":{"message":"succesfully connected to db"},"timestamp":"2025-07-13 17:21:27:2127"}
 {"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mSuccessful login\u001b[39m","meta":{"email":"admin@gmail.com","ip":"::1","userId":"6866ae7519be4c70a300dfa9"},"timestamp":"2025-07-13 17:21:48:2148"}
 {"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mSetting refresh token cookie\u001b[39m","meta":{"deviceInfo":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 - ::1","sameSite":"none","secure":true},"timestamp":"2025-07-13 17:21:48:2148"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mServer started successfully\u001b[39m","meta":{"environment":"production","port":3000,"timestamp":"2025-07-13T14:57:18.973Z"},"timestamp":"2025-07-13 20:27:18:2718"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mDatabase connected successfully\u001b[39m","meta":{"message":"succesfully connected to db"},"timestamp":"2025-07-13 20:27:18:2718"}

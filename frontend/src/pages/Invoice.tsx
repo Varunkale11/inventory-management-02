@@ -281,7 +281,7 @@ function Invoice() {
     if (poNo && !/^\d+$/.test(poNo)) {
       errors.poNo = "P.O. No. must be a number";
     }
-    if (eWayNo && (!/^[a-zA-Z0-9]+$/.test(eWayNo) || eWayNo.length > 11)) {
+    if (eWayNo && (!/^[a-zA-Z0-9]+$/.test(eWayNo) || eWayNo.length > 15)) {
       errors.eWayNo = "E-Way No. must be alphanumeric and max 11 characters";
     }
     setFormErrors(errors);
@@ -637,7 +637,7 @@ function Invoice() {
                         onChange={(e) => setEWayNo(e.target.value)}
                         placeholder="Enter E-Way No."
                         type="text"
-                        maxLength={11}
+                        maxLength={14}
                       />
                       {formErrors.eWayNo && <span className="text-red-600 text-xs">{formErrors.eWayNo}</span>}
                     </div>
