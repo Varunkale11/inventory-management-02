@@ -282,8 +282,8 @@ function Invoice() {
         errors.challanNo = "Challan No. must be alphanumeric (with _ allowed) and max 6 characters";
       }
     }
-    if (poNo && !/^\d+$/.test(poNo) || poNo.length > 12) {
-      errors.poNo = "P.O. No. must be a number and max 12 characters";
+    if (poNo && (!/^[a-zA-Z0-9]+$/.test(poNo) || poNo.length > 12)) {
+      errors.poNo = "P.O. No. must be alphanumeric and max 12 characters";
     }
     if (eWayNo && (eWayNo.length > 14)) {
       errors.eWayNo = "E-Way No. must be numeric and max 12 characters";
@@ -306,8 +306,8 @@ function Invoice() {
       return;
     }
     try {
-      console.log("Saving invoice with data:", JSON.stringify(invoiceData, null, 2));
-      console.log("after", invoiceData.gstAmount)
+      // console.log("Saving invoice with data:", JSON.stringify(invoiceData, null, 2));
+      // console.log("after", invoiceData.gstAmount)
       await saveInvoiceMutation.mutateAsync(invoiceData);
       navigate("/billing");
     } catch (error) {
@@ -319,7 +319,7 @@ function Invoice() {
   // Calculate invoice summary for preview and template
   const subtotal = invoiceItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const gstAmount = subtotal * (gstRate / 100);
-  console.log("Before gstAmount", gstAmount)
+  // console.log("Before gstAmount", gstAmount)
   const total = subtotal + gstAmount + transportationValue + packagingValue;
 
   const invoiceData = {
@@ -346,7 +346,7 @@ function Invoice() {
     showPcsInQty,
     showSqFeet,
   };
-  console.log("invoiceData", invoiceData)
+  // console.log("invoiceData", invoiceData)
 
   return (
     <div className="container p-4 pt-6 md:p-8 ">

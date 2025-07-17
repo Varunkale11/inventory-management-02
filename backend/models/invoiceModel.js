@@ -118,7 +118,7 @@ const invoiceSchema = mongoose.Schema({
     default: Date.now,
   },
   challanNo: { type: String, match: /^[a-zA-Z0-9]+$/, maxlength: 6 },
-  poNo: { type: Number },
+  poNo: { type: String, match: /^[a-zA-Z0-9]+$/,maxlength: 12 },
   eWayNo: { type: String, maxlength: 14 },
   challanDate: { type: String },
   showPcsInQty: { type: Boolean, default: false },
