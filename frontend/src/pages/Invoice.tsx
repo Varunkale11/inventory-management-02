@@ -122,7 +122,7 @@ function Invoice() {
   const [shipToOpen, setShipToOpen] = useState(false);
   const navigate = useNavigate();
 
-  const [challanNo, setChallanNo] = useState("");
+  const [challanNo, setChallanNo] = useState("DE_");
   const [poNo, setPoNo] = useState("");
   const [eWayNo, setEWayNo] = useState("");
   const [challanDate, setChallanDate] = useState("");
@@ -275,14 +275,18 @@ function Invoice() {
 
   const validateFields = () => {
     const errors: { challanNo?: string, poNo?: string, eWayNo?: string } = {};
-    if (challanNo && !/^\d+$/.test(challanNo)) {
-      errors.challanNo = "Challan No. must be a number";
+
+    if (challanNo && !challanNo.startsWith("DE_")) {
+      errors.challanNo = "Challan No. must start with 'DE_'";
+      if (challanNo && (!/^[a-zA-Z0-9_]+$/.test(challanNo) || challanNo.length > 12)) {
+        errors.challanNo = "Challan No. must be alphanumeric (with _ allowed) and max 12 characters";
+      }
     }
-    if (poNo && !/^\d+$/.test(poNo)) {
-      errors.poNo = "P.O. No. must be a number";
+    if (poNo && !/^\d+$/.test(poNo) || poNo.length > 12) {
+      errors.poNo = "P.O. No. must be a number and max 12 characters";
     }
-    if (eWayNo && (!/^[a-zA-Z0-9]+$/.test(eWayNo) || eWayNo.length > 15)) {
-      errors.eWayNo = "E-Way No. must be alphanumeric and max 11 characters";
+    if (eWayNo && (!/^\d+$/.test(eWayNo) || eWayNo.length > 14)) {
+      errors.eWayNo = "E-Way No. must be numeric and max 12 characters";
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -479,25 +483,27 @@ function Invoice() {
 
                       {selectedCustomerBillTo.id && (
                         <div className="space-y-2 p-4 border rounded-md bg-muted/50">
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">Name:</span>
-                            <span>{selectedCustomerBillTo.name}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">GST:</span>
-                            <span>{selectedCustomerBillTo.gstNumber}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">Pan Number:</span>
-                            <span>{selectedCustomerBillTo.panNumber}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">Address:</span>
-                            <span>{selectedCustomerBillTo.address}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">Phone Number:</span>
-                            <span>{selectedCustomerBillTo.phoneNumber || '-'}</span>
+                          <div className="flex flex-col gap-2">
+                            <div className="flex flex-row">
+                              <span className="w-32 text-sm font-medium">Name:</span>
+                              <span className="flex-1">{selectedCustomerBillTo.name}</span>
+                            </div>
+                            <div className="flex flex-row">
+                              <span className="w-32 text-sm font-medium">GST:</span>
+                              <span className="flex-1">{selectedCustomerBillTo.gstNumber}</span>
+                            </div>
+                            <div className="flex flex-row">
+                              <span className="w-32 text-sm font-medium">Pan Number:</span>
+                              <span className="flex-1">{selectedCustomerBillTo.panNumber}</span>
+                            </div>
+                            <div className="flex flex-row">
+                              <span className="w-32 text-sm font-medium">Address:</span>
+                              <span className="flex-1">{selectedCustomerBillTo.address}</span>
+                            </div>
+                            <div className="flex flex-row">
+                              <span className="w-32 text-sm font-medium">Phone Number:</span>
+                              <span className="flex-1">{selectedCustomerBillTo.phoneNumber || '-'}</span>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -555,25 +561,25 @@ function Invoice() {
 
                       {selectedCustomerShipTo.id && (
                         <div className="space-y-2 p-4 border rounded-md bg-muted/50">
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">Name:</span>
-                            <span>{selectedCustomerShipTo.name}</span>
+                          <div className="flex flex-row gap-2">
+                            <span className="w-32 text-sm font-medium">Name:</span>
+                            <span className="flex-1">{selectedCustomerShipTo.name}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">GST:</span>
-                            <span>{selectedCustomerShipTo.gstNumber}</span>
+                          <div className="flex flex-row gap-2">
+                            <span className="w-32 text-sm font-medium">GST:</span>
+                            <span className="flex-1">{selectedCustomerShipTo.gstNumber}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">Pan Number:</span>
-                            <span>{selectedCustomerShipTo.panNumber}</span>
+                          <div className="flex flex-row gap-2">
+                            <span className="w-32 text-sm font-medium">Pan Number:</span>
+                            <span className="flex-1">{selectedCustomerShipTo.panNumber}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">Address:</span>
-                            <span>{selectedCustomerShipTo.address}</span>
+                          <div className="flex flex-row gap-2">
+                            <span className="w-32 text-sm font-medium">Address:</span>
+                            <span className="flex-1">{selectedCustomerShipTo.address}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">Phone Number:</span>
-                            <span>{selectedCustomerShipTo.phoneNumber || '-'}</span>
+                          <div className="flex flex-row gap-2">
+                            <span className="w-32 text-sm font-medium">Phone Number:</span>
+                            <span className="flex-1">{selectedCustomerShipTo.phoneNumber || '-'}</span>
                           </div>
                         </div>
                       )}
@@ -611,6 +617,8 @@ function Invoice() {
                         className="w-full"
                         value={challanNo}
                         onChange={(e) => setChallanNo(e.target.value)}
+                        defaultValue={`DE_${challanNo}`}
+                        maxLength={12}
                         placeholder="Enter Challan No."
                         type="text"
                       />
@@ -621,6 +629,7 @@ function Invoice() {
                       <Input
                         className="w-full"
                         value={poNo}
+                        maxLength={12}
                         onChange={(e) => setPoNo(e.target.value)}
                         placeholder="Enter P.O. No."
                         type="text"
@@ -634,7 +643,16 @@ function Invoice() {
                       <Input
                         className="w-full"
                         value={eWayNo}
-                        onChange={(e) => setEWayNo(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
+                          let formatted = value;
+                            // Insert a dash after every 4 characters (up to max 15 chars)
+                            formatted = formatted
+                            .replace(/(.{4})/g, "$1-")
+                            .replace(/-$/, ""); // Remove trailing dash if present
+                          setEWayNo(formatted);
+                          // setEWayNo(e.target.value)
+                        }}
                         placeholder="Enter E-Way No."
                         type="text"
                         maxLength={14}

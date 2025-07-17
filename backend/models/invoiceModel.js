@@ -24,7 +24,7 @@ const invoiceSchema = mongoose.Schema({
       required: false,
     },
   },
-  customerShipTo:{
+  customerShipTo: {
     name: {
       type: String,
       uppercase: true,
@@ -117,7 +117,7 @@ const invoiceSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  challanNo: { type: Number },
+  challanNo: { type: String, match: /^[a-zA-Z0-9]+$/, maxlength: 14 },
   poNo: { type: Number },
   eWayNo: { type: String, match: /^[a-zA-Z0-9]+$/, maxlength: 14 },
   challanDate: { type: String },
