@@ -285,7 +285,7 @@ function Invoice() {
     if (poNo && !/^\d+$/.test(poNo) || poNo.length > 12) {
       errors.poNo = "P.O. No. must be a number and max 12 characters";
     }
-    if (eWayNo && (!/^\d+$/.test(eWayNo) || eWayNo.length > 14)) {
+    if (eWayNo && (eWayNo.length > 14)) {
       errors.eWayNo = "E-Way No. must be numeric and max 12 characters";
     }
     setFormErrors(errors);
@@ -618,7 +618,7 @@ function Invoice() {
                         value={challanNo}
                         onChange={(e) => setChallanNo(e.target.value)}
                         defaultValue={`DE${challanNo}`}
-                        maxLength={12}
+                        maxLength={6}
                         placeholder="Enter Challan No."
                         type="text"
                       />

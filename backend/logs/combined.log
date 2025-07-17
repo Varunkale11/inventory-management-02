@@ -1381,3 +1381,11 @@
 {"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mDatabase connected successfully\u001b[39m","meta":{"message":"succesfully connected to db"},"timestamp":"2025-07-17 10:49:26:4926"}
 {"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mServer started successfully\u001b[39m","meta":{"environment":"production","port":3000,"timestamp":"2025-07-17T05:19:39.637Z"},"timestamp":"2025-07-17 10:49:39:4939"}
 {"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mDatabase connected successfully\u001b[39m","meta":{"message":"succesfully connected to db"},"timestamp":"2025-07-17 10:49:39:4939"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mServer started successfully\u001b[39m","meta":{"environment":"production","port":3000,"timestamp":"2025-07-17T05:52:30.982Z"},"timestamp":"2025-07-17 11:22:30:2230"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mDatabase connected successfully\u001b[39m","meta":{"message":"succesfully connected to db"},"timestamp":"2025-07-17 11:22:30:2230"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mServer started successfully\u001b[39m","meta":{"environment":"production","port":3000,"timestamp":"2025-07-17T06:03:16.597Z"},"timestamp":"2025-07-17 11:33:16:3316"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mDatabase connected successfully\u001b[39m","meta":{"message":"succesfully connected to db"},"timestamp":"2025-07-17 11:33:16:3316"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mServer started successfully\u001b[39m","meta":{"environment":"production","port":3000,"timestamp":"2025-07-17T06:03:30.749Z"},"timestamp":"2025-07-17 11:33:30:3330"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mDatabase connected successfully\u001b[39m","meta":{"message":"succesfully connected to db"},"timestamp":"2025-07-17 11:33:30:3330"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mServer started successfully\u001b[39m","meta":{"environment":"production","port":3000,"timestamp":"2025-07-17T06:03:42.085Z"},"timestamp":"2025-07-17 11:33:42:3342"}
+{"level":"\u001b[32minfo\u001b[39m","message":"\u001b[32mDatabase connected successfully\u001b[39m","meta":{"message":"succesfully connected to db"},"timestamp":"2025-07-17 11:33:42:3342"}
