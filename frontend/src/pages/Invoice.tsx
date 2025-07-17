@@ -122,7 +122,7 @@ function Invoice() {
   const [shipToOpen, setShipToOpen] = useState(false);
   const navigate = useNavigate();
 
-  const [challanNo, setChallanNo] = useState("DE_");
+  const [challanNo, setChallanNo] = useState("DE");
   const [poNo, setPoNo] = useState("");
   const [eWayNo, setEWayNo] = useState("");
   const [challanDate, setChallanDate] = useState("");
@@ -276,10 +276,10 @@ function Invoice() {
   const validateFields = () => {
     const errors: { challanNo?: string, poNo?: string, eWayNo?: string } = {};
 
-    if (challanNo && !challanNo.startsWith("DE_")) {
-      errors.challanNo = "Challan No. must start with 'DE_'";
-      if (challanNo && (!/^[a-zA-Z0-9_]+$/.test(challanNo) || challanNo.length > 12)) {
-        errors.challanNo = "Challan No. must be alphanumeric (with _ allowed) and max 12 characters";
+    if (challanNo && !challanNo.startsWith("DE")) {
+      errors.challanNo = "Challan No. must start with 'DE'";
+      if (challanNo && (!/^[a-zA-Z0-9_]+$/.test(challanNo) || challanNo.length > 6)) {
+        errors.challanNo = "Challan No. must be alphanumeric (with _ allowed) and max 6 characters";
       }
     }
     if (poNo && !/^\d+$/.test(poNo) || poNo.length > 12) {
@@ -617,7 +617,7 @@ function Invoice() {
                         className="w-full"
                         value={challanNo}
                         onChange={(e) => setChallanNo(e.target.value)}
-                        defaultValue={`DE_${challanNo}`}
+                        defaultValue={`DE${challanNo}`}
                         maxLength={12}
                         placeholder="Enter Challan No."
                         type="text"
