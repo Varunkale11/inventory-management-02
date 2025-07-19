@@ -164,7 +164,7 @@ const InvoiceClassic: React.FC<{ invoiceData: InvoiceData }> = ({ invoiceData })
         <div className="p-0">
           <div className="text-xs space-y-1">
             <p className='text-xs w-40 text-left'>
-              {companyDetails.address}, {companyDetails.cityState}
+              {companyDetails.address}
             </p>
           </div>
         </div>

@@ -432,13 +432,11 @@ const PremiumMinimalInvoice: React.FC<{ invoiceData: InvoiceData }> = ({ invoice
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <div className="text-[11px]">Tel: 9820132560, 9637831717</div>
-                  <div className="text-[11px]">Web: www.gfttools.com</div>
-                  <div className="text-[11px]">Email: info@gfttools.com</div>
+                  <div className="text-[11px]">Email: dyn.enterprises@gmail.com</div>
                 </div>
                 <div className="space-y-1">
                   <div className="text-[11px]">{companyDetails.address}</div>
-                  <div className="text-[11px]">Nagar, Near Katraj Tunnel</div>
-                  <div className="text-[11px]">NH4, Shindewadi, Tal-Bhor</div>
+
                 </div>
               </div>
             </div>

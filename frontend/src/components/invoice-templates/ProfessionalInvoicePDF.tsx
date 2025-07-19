@@ -132,7 +132,7 @@ interface InvoiceData {
 const styles = StyleSheet.create({
     page: {
         padding: 15,
-        paddingTop:30,
+        paddingTop: 30,
         paddingBottom: 45, // Increased to reserve space for footer
         fontSize: 9,
         fontFamily: 'Poppins',
@@ -716,10 +716,12 @@ const ProfessionalInvoicePDF: React.FC<{ invoiceData: InvoiceData | null; qrCode
                         <Text style={[styles.bankText, { paddingLeft: 6 }, { paddingVertical: 4 }]}>{numberToWords(invoiceData.total)}</Text>
 
                         <Text style={[styles.bankTitle, { borderTopWidth: 1, borderColor: '#000', paddingTop: 4 }, { paddingLeft: 6 }]}>Bank Details</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Name: State Bank of India</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Branch Name: RAF CAMP</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Account Number: 20000000452</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Branch IFSC: SBIN000488</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Bank Name: ICICI</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Account Name: DYNAMIC ENTERPRISES</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Branch Name: Sinhgad Road Branch</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>A/C Type: Current</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Bank Account Number: 180205500134</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Bank Branch IFSC: ICIC0001802</Text>
                     </View>
 
                     <View style={styles.totalSummary} wrap={false}>

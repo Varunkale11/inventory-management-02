@@ -646,8 +646,8 @@ function Invoice() {
                         onChange={(e) => {
                           const value = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
                           let formatted = value;
-                            // Insert a dash after every 4 characters (up to max 15 chars)
-                            formatted = formatted
+                          // Insert a dash after every 4 characters (up to max 15 chars)
+                          formatted = formatted
                             .replace(/(.{4})/g, "$1-")
                             .replace(/-$/, ""); // Remove trailing dash if present
                           setEWayNo(formatted);

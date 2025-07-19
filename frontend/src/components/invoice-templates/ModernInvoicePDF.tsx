@@ -132,7 +132,7 @@ interface InvoiceData {
 const styles = StyleSheet.create({
     page: {
         padding: 15,
-        paddingTop:30,
+        paddingTop: 30,
         paddingBottom: 50, // Increased to reserve space for footer
         fontSize: 9,
         fontFamily: 'Poppins',
@@ -556,13 +556,12 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                         <Text style={styles.companyName}>{invoiceData.companyDetails.name}</Text>
                         <View style={styles.companyContentRow}>
                             <View style={styles.contactInfo}>
-                                <Text style={styles.companyDetails}>Tel: 9820132560, 9637831717</Text>
-                                <Text style={styles.companyDetails}>Email: info@gfttools.com</Text>
+                                <Text style={styles.companyDetails}>Tel: {invoiceData.companyDetails.phone}</Text>
+                                <Text style={styles.companyDetails}>Email: {invoiceData.companyDetails.email}</Text>
                             </View>
                             <View style={styles.addressInfo}>
                                 <Text style={styles.companyDetails}>{invoiceData.companyDetails.address}</Text>
-                                <Text style={styles.companyDetails}>Nagar, Near Katraj Tunnel</Text>
-                                <Text style={styles.companyDetails}>NH4, Shindewadi, Tal-Bhor</Text>
+                                <Text style={styles.companyDetails}>{invoiceData.companyDetails.cityState}</Text>
                             </View>
                         </View>
                     </View>
@@ -724,10 +723,12 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                         <Text style={[styles.bankText, { paddingLeft: 6 }, { paddingVertical: 4 }]}>{numberToWords(invoiceData.total)}</Text>
 
                         <Text style={[styles.bankTitle, { borderTopWidth: 1, borderColor: '#000', paddingTop: 4 }, { paddingLeft: 6 }]}>Bank Details</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Name: State Bank of India</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Branch Name: RAF CAMP</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Account Number: 20000000452</Text>
-                        <Text style={[styles.bankText, { paddingLeft: 6 }]}>Bank Branch IFSC: SBIN000488</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Bank Name: ICICI</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Account Name: DYNAMIC ENTERPRISES</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Branch Name: Sinhgad Road Branch</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>A/C Type: Current</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Bank Account Number: 180205500134</Text>
+                        <Text style={[styles.bankText, { paddingLeft: 5 }]}>Bank Branch IFSC: ICIC0001802</Text>
                     </View>
 
                     <View style={styles.totalSummary} wrap={false}>

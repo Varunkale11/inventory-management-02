@@ -720,10 +720,12 @@ const ClassicInvoicePDF: React.FC<{ invoiceData: InvoiceData, qrCode: string }> 
                         <Text style={[styles.bankText, { paddingLeft: 6 }, { paddingVertical: 4 }]}>{numberToWords(invoiceData.total)}</Text>
 
                         <Text style={[styles.bankTitle, { borderTopWidth: 1, borderColor: '#000', paddingTop: 4 }, { paddingLeft: 6 }]}>Bank Details</Text>
-                        <Text style={styles.bankText}>Bank Name: State Bank of India</Text>
-                        <Text style={styles.bankText}>Branch Name: RAF CAMP</Text>
-                        <Text style={styles.bankText}>Bank Account Number: 20000000452</Text>
-                        <Text style={styles.bankText}>Bank Branch IFSC: SBIN000488</Text>
+                        <Text style={styles.bankText}>Bank Name: ICICI</Text>
+                        <Text style={styles.bankText}>Account Name: DYNAMIC ENTERPRISES</Text>
+                        <Text style={styles.bankText}>Branch Name: Sinhgad Road Branch</Text>
+                        <Text style={styles.bankText}>A/C Type: Current</Text>
+                        <Text style={styles.bankText}>Bank Account Number: 180205500134</Text>
+                        <Text style={styles.bankText}>Bank Branch IFSC: ICIC0001802</Text>
                     </View>
 
                     <View style={styles.totalSummary} wrap={false}>

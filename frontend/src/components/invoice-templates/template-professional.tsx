@@ -143,12 +143,11 @@ const ProfessionalInvoiceTemplate: React.FC<{ invoiceData: InvoiceData }> = ({ i
                 </div>
                 {/* Company Info */}
                 <div className="flex-1 p-4 ">
-                    <h1 className="text-2xl font-bold text-blue-800 text-left mb-2">DYNAMIC ENTRPRISE</h1>
+                    <h1 className="text-2xl font-bold text-blue-800 text-left mb-2">DYNAMIC ENTRPRISES</h1>
                     <div className="flex justify-between">
                         <div className="text-xs text-left space-y-1 mb-2">
-                            <p>Tel : 079-25820309</p>
-                            <p>Web : www.gfttools.com</p>
-                            <p>Email : info@gfttools.com</p>
+                            <p>Tel: 9820132560, 9637831717</p>
+                            <p>Email: dyn.enterprises@gmail.com</p>
                         </div>
                     </div>
                 </div>
