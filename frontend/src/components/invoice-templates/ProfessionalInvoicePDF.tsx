@@ -14,6 +14,7 @@ import Poppins from '../../../public/fonts/Poppins-Regular.ttf';
 import PoppinsBold from '../../../public/fonts/Inter_24pt-Bold.ttf';
 import Logo from '../../../public/logo.png';
 import { Download } from 'lucide-react';
+import { constantsOfInvoice } from './constant';
 
 const numberToWords = (num: number): string => {
     const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
@@ -579,7 +580,7 @@ const ProfessionalInvoicePDF: React.FC<{ invoiceData: InvoiceData | null; qrCode
                 {/* GSTIN Section */}
                 <View style={styles.gstinSection}>
                     <Text style={styles.gstinLabel}>GSTIN: </Text>
-                    <Text style={styles.gstinValue}> 24HDE7487RE5RT4</Text>
+                    <Text style={styles.gstinValue}>{constantsOfInvoice.GSTIN}</Text>
                 </View>
 
                 {/* Main Content */}

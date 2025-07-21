@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     Document,
     Page,
@@ -14,6 +14,7 @@ import Poppins from '../../../public/fonts/Poppins-Regular.ttf';
 import PoppinsBold from '../../../public/fonts/Inter_24pt-Bold.ttf';
 import { Download } from 'lucide-react';
 import Logo from '../../../public/logo.png';
+import { constantsOfInvoice } from './constant';
 
 const numberToWords = (num: number): string => {
     const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
@@ -577,7 +578,7 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
                 {/* GSTIN Section */}
                 <View style={styles.gstinSection}>
                     <Text style={styles.gstinLabel}>GSTIN: </Text>
-                    <Text style={styles.gstinValue}>24HDE7487RE5RT4</Text>
+                    <Text style={styles.gstinValue}>{constantsOfInvoice.GSTIN}</Text>
                 </View>
 
                 {/* Main Content */}
@@ -800,7 +801,7 @@ const ModernInvoicePDF: React.FC<{ invoiceData: InvoiceData | null, qrCode: stri
 };
 
 const ModernInvoicePDFWrapper: React.FC<{ invoiceData: InvoiceData | null, qrCode: string, autoDownload?: boolean }> = ({ invoiceData, qrCode, autoDownload }) => {
-    const [instance, updateInstance] = usePDF({ document: <ModernInvoicePDF invoiceData={invoiceData} qrCode={qrCode} /> });
+    const [instance] = usePDF({ document: <ModernInvoicePDF invoiceData={invoiceData} qrCode={qrCode} /> });
 
     React.useEffect(() => {
         if (autoDownload && instance.url) {
