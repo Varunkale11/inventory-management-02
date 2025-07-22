@@ -1,1 +1,1 @@
-# product-invoice
+# Invoice management
