@@ -23,10 +23,9 @@ const customerSchema = new mongoose.Schema({
     required: false,
   },
   phoneNumber: {
-    type: String,
-    maxLength: 10,
-    minLength: 10,
+    type: Number,
     required: false,
+    maxLength:[10, "Phone number must be 10 digits"],
   },
 });
 
